@@ -1,0 +1,7 @@
+VAR var1 REAL 0.1
+VAR var2 REAL 2.0
+VAR var3 REAL 0.0
+VAR var4 BOOL 1
+BST XIO(test_1) OTE(test_2) BND
+BST ADD(var1, var2, var3) BND
+BST XIC(var4) OTE(test_3) BND
