@@ -14,17 +14,16 @@ public:
     void parseLadderLogic(const std::string &ladderLogic);
     void executeLadderLogic();
     void printRelayStatus() const;
-    
 
     void setRelayState(const std::string &name, bool state);
 
-    enum DataType { INT, DINT, REAL, BOOL };
+    enum DataType { INT, BOOL, REAL };
 
-    void assignDataType(const std::string &name, DataType type, const std::string &value);
+    void assignDataType(const std::string &name, DataType type, const std::string &value = "0");
     void unassignDataType(const std::string &name);
-    
-    void saveDataTypesToFile(const std::string &filename) const;
-    void loadDataTypesFromFile(const std::string &filename);
+
+    void loadVariablesFromFile(const std::string &filename);
+    void saveVariablesToFile(const std::string &filename) const;
 
 private:
     struct Relay {
@@ -41,7 +40,6 @@ private:
     std::vector<Instruction> instructions;
 
     std::map<std::string, int> intVariables;
-    std::map<std::string, int> dintVariables;
     std::map<std::string, float> realVariables;
     std::map<std::string, bool> boolVariables;
 
@@ -54,6 +52,9 @@ private:
 
     template <typename T>
     void setVariableValue(const std::string &name, T value);
+
+    DataType getVariableType(const std::string &name) const;
+    void ensureVariableExists(const std::string &name, DataType type);
 };
 
 #endif // LADDER_LOGIC_INTERPRETER_H

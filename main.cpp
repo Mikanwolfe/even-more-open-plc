@@ -16,6 +16,7 @@ void readLadderLogicFromFile(const std::string &filename, std::string &ladderLog
     std::stringstream buffer;
     buffer << file.rdbuf();
     ladderLogic = buffer.str();
+    std::cout << "Loaded ladder logic from file: " << filename << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -43,8 +44,8 @@ int main(int argc, char *argv[]) {
 
     LadderLogicInterpreter interpreter;
 
-    // Load data types from file
-    interpreter.loadDataTypesFromFile("data_types.txt");
+    // Load variables from file
+    interpreter.loadVariablesFromFile("variables.txt");
 
     // Parse the ladder logic
     interpreter.parseLadderLogic(ladderLogic);
@@ -54,11 +55,12 @@ int main(int argc, char *argv[]) {
         std::cout << "Scan " << (scan + 1) << std::endl;
         interpreter.executeLadderLogic();
         interpreter.printRelayStatus();
+        interpreter.printVariableStatus();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    // Save data types to file
-    interpreter.saveDataTypesToFile("data_types.txt");
+    // Save variables to file
+    interpreter.saveVariablesToFile("variables.txt");
 
     return 0;
 }

@@ -1,0 +1,2 @@
+001 XIC(var1) XIC(var2) OTE(var3) // AND Statement
+002 END

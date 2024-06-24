@@ -1,0 +1,4 @@
+VAR var1 REAL 0.1
+VAR var2 REAL 2
+VAR var3 REAL 0
+VAR var4 BOOL 1
