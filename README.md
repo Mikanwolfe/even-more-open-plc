@@ -35,3 +35,12 @@ Adding may only occur to variables of the same type
 
 ## Next up
 A simple SPS simulation
+
+## Philosophy/General rules
+
+I'll adhere to the following general rules as a rule of thumb or preference.
+
+- No such things as blocks for variable storage. That's kind of annoying and silly and should be relegated to SLC5s
+- "PLC Code" must be uploadable and downloadble, without flash or restart
+- Variables are always globally scoped
+- Source code should be customisable such that any reasonably skilled user can make a driver and additional blocks for any ESP/arduino
