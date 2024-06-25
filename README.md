@@ -103,8 +103,6 @@ The same can be achieved with OTL's and OTUs
 
 ## Planned Instructions
 
-- `OTL`
-- `OTU`
 - `PTS` (custom positive transition, ONS)
 - `NTS` (custom negative transition)
 - `TON`

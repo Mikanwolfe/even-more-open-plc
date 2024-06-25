@@ -1,0 +1,14 @@
+
+Timer on and Timer Off Example
+
+en_timer bool 1
+ton_dn bool 0
+ton_tt bool 0
+ton_pre int 10000
+ton_acc int 0
+timer_is_done bool 0
+
+
+001 XIC(en_timer) TON(ton_dn,ton_tt,ton_pre,ton_acc)
+002 XIC(ton_dn) OTE(timer_is_done)
+

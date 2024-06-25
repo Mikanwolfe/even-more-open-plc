@@ -3,6 +3,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <stack>
+#include <thread>
+#include <chrono>
 
 LadderLogicParser::LadderLogicParser(const std::vector<std::string>& logic, std::map<std::string, Variable>& variableMap)
     : logic(logic), variableMap(variableMap), lineState(true), endFound(false) {}
@@ -11,7 +13,17 @@ std::string boolToString(bool value) {
     return value ? "true" : "false";
 }
 
+
 void LadderLogicParser::parseAndExecute() {
+    initialTime = std::chrono::high_resolution_clock::now();
+    executeLogic();
+}
+
+void LadderLogicParser::executeLogic() {
+    using namespace std::chrono;
+
+    auto start = high_resolution_clock::now();
+    
     for (const auto& line : logic) {
         std::istringstream iss(line);
         std::string token;
@@ -30,6 +42,16 @@ void LadderLogicParser::parseAndExecute() {
         lineState = true; // Reset line state for each new line
         handleTokens(tokens);
     }
+
+    
+    // Simulate a delay between scans
+    std::this_thread::sleep_for(milliseconds(10));
+    auto end = high_resolution_clock::now();
+    scanTime = duration_cast<milliseconds>(end - start).count();
+    
+    std::cout << "Scan Time: " << scanTime << " ms" << std::endl;
+
+    
 }
 
 void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
@@ -145,6 +167,10 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
                     return;
                 }
                 currentBranchState = currentBranchState && handleGtrInstruction(var1, var2);
+            } else if (opcode == "TON") {
+                handleTonInstruction(params, currentBranchState);
+            } else if (opcode == "TOF") {
+                handleTofInstruction(params, currentBranchState);
             } else if (opcode == "BST") {
                 branchStack.push(branchResult);
                 currentBranchStateStack.push(currentBranchState);
@@ -172,6 +198,81 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
         }
         ++i;
     }
+}
+
+
+void LadderLogicParser::handleTonInstruction(const std::string& params, bool currentBranchState) {
+    std::istringstream paramStream(params);
+    std::string dn, tt, pre, acc;
+    std::getline(paramStream, dn, ',');
+    std::getline(paramStream, tt, ',');
+    std::getline(paramStream, pre, ',');
+    std::getline(paramStream, acc, ',');
+
+    if (dn.empty() || tt.empty() || pre.empty() || acc.empty()) {
+        std::cerr << "TON instruction has incomplete parameters." << std::endl;
+        return;
+    }
+
+    int preValue = std::get<int>(variableMap[pre]);
+    int accValue = std::get<int>(variableMap[acc]);
+
+    if (currentBranchState) {
+        variableMap[tt] = true;
+        std::cout << "accVakye - " << accValue << std::endl;
+        accValue += scanTime;
+        std::cout << "accVakye after - " << accValue << " scan time: " << scanTime << std::endl;
+        if (accValue >= preValue) {
+            accValue = preValue;
+            variableMap[dn] = true;
+            variableMap[tt] = false;
+        } else {
+            variableMap[dn] = false;
+        }
+    } else {
+        accValue = 0;
+        variableMap[tt] = false;
+        variableMap[dn] = false;
+    }
+
+    variableMap[acc] = accValue;
+    std::cout << "TON(" << params << ") = DN: " << boolToString(std::get<bool>(variableMap[dn])) << ", TT: " << boolToString(std::get<bool>(variableMap[tt])) << ", ACC: " << accValue << std::endl;
+}
+
+void LadderLogicParser::handleTofInstruction(const std::string& params, bool currentBranchState) {
+    std::istringstream paramStream(params);
+    std::string dn, tt, pre, acc;
+    std::getline(paramStream, dn, ',');
+    std::getline(paramStream, tt, ',');
+    std::getline(paramStream, pre, ',');
+    std::getline(paramStream, acc, ',');
+
+    if (dn.empty() || tt.empty() || pre.empty() || acc.empty()) {
+        std::cerr << "TOF instruction has incomplete parameters." << std::endl;
+        return;
+    }
+
+    int preValue = std::get<int>(variableMap[pre]);
+    int accValue = std::get<int>(variableMap[acc]);
+
+    if (!currentBranchState) {
+        variableMap[tt] = true;
+        accValue += scanTime;
+        if (accValue >= preValue) {
+            accValue = preValue;
+            variableMap[dn] = false;
+            variableMap[tt] = false;
+        } else {
+            variableMap[dn] = true;
+        }
+    } else {
+        accValue = 0;
+        variableMap[tt] = false;
+        variableMap[dn] = true;
+    }
+
+    variableMap[acc] = accValue;
+    std::cout << "TOF(" << params << ") = DN: " << boolToString(std::get<bool>(variableMap[dn])) << ", TT: " << boolToString(std::get<bool>(variableMap[tt])) << ", ACC: " << accValue << std::endl;
 }
 
 void LadderLogicParser::handleAddInstruction(const std::string& var1, const std::string& var2, const std::string& var3) {

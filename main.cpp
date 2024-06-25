@@ -99,7 +99,9 @@ int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
         if (std::string(argv[i]) == "-f" && i + 1 < argc) {
             logicFile = argv[++i];
-        } else if (std::string(argv[i]) == "-t") {
+        }
+        
+        if (std::string(argv[i]) == "-t") {
             testMode = true;
         }
     }
@@ -111,6 +113,9 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> logic;
     loadLogic(logicFile, logic);
 
+    // Initialize the parser once
+    LadderLogicParser parser(logic, variableMap);
+
     if (testMode) {
         // Keep scanning with a delay of 10ms
         while (true) {
@@ -119,13 +124,13 @@ int main(int argc, char* argv[]) {
             printVariables(variableMap);
             std::cout << "-------" << "-------" << std::endl;
 
-            // Parse and execute logic
-            LadderLogicParser parser(logic, variableMap);
-            parser.parseAndExecute();
+            // Execute logic without re-initializing the parser
+            parser.executeLogic();
 
             // Print variables after execution
             std::cout << "-------" << "Variables after execution:" << "-------" << std::endl;
             printVariables(variableMap);
+            std::cout << "Scan time: " << parser.scanTime << " ms" << std::endl;
             std::cout << "-------" << "-------" << std::endl;
 
             // Save variables
@@ -142,13 +147,13 @@ int main(int argc, char* argv[]) {
         printVariables(variableMap);
         std::cout << "-------" << "-------" << std::endl;
 
-        // Parse and execute logic
-        LadderLogicParser parser(logic, variableMap);
-        parser.parseAndExecute();
+        // Execute logic without re-initializing the parser
+        parser.executeLogic();
 
         // Print variables after execution
         std::cout << "-------" << "Variables after execution:" << "-------" << std::endl;
         printVariables(variableMap);
+        std::cout << "Scan time: " << parser.scanTime << " ms" << std::endl;
         std::cout << "-------" << "-------" << std::endl;
 
         // Save variables

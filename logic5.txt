@@ -2,6 +2,16 @@
 A true SPS with latching and branches
 Now with instruction latching!
 
+Variables are:
+high real 1000
+inflow real 10
+level real 420
+low real 400
+outflow real 30
+run_pump bool 0
+
+All the above are trated as comments as none start with numbers.
+
 001 ADD(level,inflow,level)
 002 GTR(level,high) OTL(run_pump)
 003 LSS(level,low) OTU(run_pump)
