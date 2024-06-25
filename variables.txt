@@ -1,3 +1,7 @@
+i1 int 5
+i2 int 15
+r1 bool 1
+r2 bool 0
 var1 bool 1
 var11 real 2
 var12 real 3

@@ -94,16 +94,18 @@ int main() {
     loadLogic("logic.txt", logic);
 
     // Print variables before execution
-    std::cout << "Variables before execution:" << std::endl;
+    std::cout << "-------" << "Variables before execution:" << "-------" << std::endl;
     printVariables(variableMap);
+    std::cout << "-------" << "-------" << std::endl;
 
     // Parse and execute logic
     LadderLogicParser parser(logic, variableMap);
     parser.parseAndExecute();
 
     // Print variables after execution
-    std::cout << "Variables after execution:" << std::endl;
+    std::cout << "-------" << "Variables after execution:" << "-------" << std::endl;
     printVariables(variableMap);
+    std::cout << "-------" << "-------" << std::endl;
 
     // Save variables
     saveVariables("variables.txt", variableMap);

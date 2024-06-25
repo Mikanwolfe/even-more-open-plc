@@ -20,7 +20,7 @@ All non-number lines will be skipped/treated as comments. The following is valid
 
 ```
 This represents:
-|     var1    var2    var3
+|     var1    var2    var3    |
 |-----[ ]-----[/]-----( )-----|
 001 XIC(var1) XIO(var2) OTE(var3)
 002 END
@@ -33,6 +33,37 @@ Instructions must be separated by a space ` `
 All variables must be declared before scanning
 Adding may only occur to variables of the same type
 
+### Currently implemented instructions
+
+XIC
+
+- Excite on Close
+
+XIO
+
+- Excite on Open
+
+OTE
+
+- Output Terminal
+
+ADD
+
+- Adds INTs or REALs
+
+SUB
+
+- Subtracts INTs or REALs
+
+LSS
+
+- Less than
+
+GTR
+
+- Greater than
+
+
 ## Next up
 A simple SPS simulation
 
@@ -44,3 +75,4 @@ I'll adhere to the following general rules as a rule of thumb or preference.
 - "PLC Code" must be uploadable and downloadble, without flash or restart
 - Variables are always globally scoped
 - Source code should be customisable such that any reasonably skilled user can make a driver and additional blocks for any ESP/arduino
+- LESS and GREATER should follow CMD syntax, i.e., less = LSS and greater = GTR. This applies across the platform: follow programming convention.
