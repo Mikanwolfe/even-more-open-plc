@@ -1,6 +1,9 @@
-001 XIC(var1) XIO(var2) OTE(var3)
-This is a comment!
 
+This represents:
+|     var1    var2    var3
+|-----[ ]-----[/]-----( )-----|
+
+001 XIC(var1) XIO(var2) OTE(var3)
 002 ADD(var11,var12,var13)
 003 SUB(var21,var22,var23)
 004 END
