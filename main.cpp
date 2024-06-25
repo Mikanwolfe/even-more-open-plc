@@ -2,65 +2,67 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <chrono>
-#include <thread>
-#include "LadderLogicInterpreter.h"
+#include <map>
+#include <variant>
+#include <vector>
+#include "LadderLogicParser.h"
 
-void readLadderLogicFromFile(const std::string &filename, std::string &ladderLogic) {
+// Define the variant type for variables
+using Variable = std::variant<int, bool, double>;
+std::map<std::string, Variable> variableMap;
+
+// Function to load variables from a file
+void loadVariables(const std::string& filename) {
     std::ifstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
-        exit(EXIT_FAILURE);
+    if (!file) {
+        std::cerr << "Failed to open " << filename << std::endl;
+        return;
     }
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    ladderLogic = buffer.str();
-    std::cout << "Loaded ladder logic from file: " << filename << std::endl;
-}
-
-int main(int argc, char *argv[]) {
-    std::string filename;
-    int numScans = 10; // Default number of scans
-
-    // Parse command line arguments
-    for (int i = 1; i < argc; ++i) {
-        if (std::string(argv[i]) == "-n" && i + 1 < argc) {
-            numScans = std::stoi(argv[++i]);
-        } else {
-            filename = argv[i];
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string name, type;
+        iss >> name >> type;
+        if (type == "int") {
+            int value;
+            iss >> value;
+            variableMap[name] = value;
+        } else if (type == "bool") {
+            bool value;
+            iss >> value;
+            variableMap[name] = value;
+        } else if (type == "real") {
+            double value;
+            iss >> value;
+            variableMap[name] = value;
         }
     }
+}
 
-    if (filename.empty()) {
-        std::cerr << "Usage: " << argv[0] << " <filename> [-n numScans]" << std::endl;
-        return EXIT_FAILURE;
+// Function to load logic from a file
+void loadLogic(const std::string& filename, std::vector<std::string>& logic) {
+    std::ifstream file(filename);
+    if (!file) {
+        std::cerr << "Failed to open " << filename << std::endl;
+        return;
     }
-
-    std::string ladderLogic;
-
-    // Read ladder logic from file
-    readLadderLogicFromFile(filename, ladderLogic);
-
-    LadderLogicInterpreter interpreter;
-
-    // Load variables from file
-    interpreter.loadVariablesFromFile("variables.txt");
-
-    // Parse the ladder logic
-    interpreter.parseLadderLogic(ladderLogic);
-
-    // Execute the ladder logic for the specified number of scans
-    for (int scan = 0; scan < numScans; ++scan) {
-        std::cout << "Scan " << (scan + 1) << std::endl;
-        interpreter.executeLadderLogic();
-        interpreter.printRelayStatus();
-        interpreter.printVariableStatus();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::string line;
+    while (std::getline(file, line)) {
+        logic.push_back(line);
     }
+}
 
-    // Save variables to file
-    interpreter.saveVariablesToFile("variables.txt");
+int main() {
+    // Load variables
+    loadVariables("variables.txt");
+
+    // Load logic
+    std::vector<std::string> logic;
+    loadLogic("logic.txt", logic);
+
+    // Parse and execute logic
+    LadderLogicParser parser(logic, variableMap);
+    parser.parseAndExecute();
 
     return 0;
 }
