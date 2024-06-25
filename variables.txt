@@ -1,12 +1,6 @@
 high real 1000
-in1 bool 1
-in2 bool 0
-in3 bool 0
-in5 bool 0
-in6 bool 0
 inflow real 10
-level real 520
+level real 420
 low real 400
-out bool 0
 outflow real 30
 run_pump bool 0
