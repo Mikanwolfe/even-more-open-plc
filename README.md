@@ -1,22 +1,42 @@
 # Even More Open PLC
 
-The goal of this small mini project is:
+## Project Goals
 
-1. Write ESP32 firmware such that it can interpret Ladder Logic
-2. Provide Debugging support for on-board PLC tags
-3. Provide functionality to upload/download PLC code.
+This project aims to achieve the following objectives:
 
-The "PLC Code" will be Allen-Bradley/Rockwell styled Ladder Logic.
+1. Develop firmware for the ESP32 to interpret Ladder Logic.
+2. Provide debugging support for on-board PLC tags.
+3. Enable the upload and download of PLC code.
 
-It won't be actual AB code but inspired by it.
+The PLC code will be inspired by Allen-Bradley/Rockwell styled Ladder Logic, though it will not be actual AB code.
 
-To build: `make`. To run, `./ladder_logic`.
+### Building and Running
 
+To build the project, use:
+```
+make
+```
+
+To run the project, use:
+```
+./ladder_logic
+```
+
+## Project Rationale
+
+The main limitation with most ESP-based ladder logic systems (e.g., OpenPLC, IoT Ladder Editor) is their reliance on compiling into PLC code or firmware. This is similar to most PLCs or RTUs such as Kingfishers, SCADAPacks, etc., which require a compilation step.
+
+This project aims to create an ESP32 firmware interpreter, allowing logic to be uploaded and downloaded without flashing the firmware. This approach offers several advantages:
+
+- Interpreted languages do not crash your firmware.
+- Logic can be changed on the fly.
+- Logic can be easily programmed by an external source and transferred to the device.
+
+The project emphasises simplicity, avoiding heavy runtimes like Python2-based GUIs or Java 8 GUIs. A CLI-based runtime or a Docker image with serial port access and a small web server for device configuration will be provided. This will offer a simplified Node-RED-like experience.
 
 ## Syntax
 
-All code lines must start with a number. This does not have to be sequential, but it is preferred.
-All non-number lines will be skipped/treated as comments. The following is valid:
+All code lines must start with a number. Non-number lines will be skipped or treated as comments. The following example is valid:
 
 ```
 This represents:
@@ -26,19 +46,17 @@ This represents:
 002 END
 ```
 
-Typically all instructions are 3 letters long. This may change later.
-Instructions can be any number of params
-Instructions must be separated by a space ` `
+Key points:
+- Instructions are typically three letters long.
+- Instructions can have any number of parameters.
+- Instructions must be separated by a space (` `).
+- All variables must be declared before scanning.
+- Operations can only be performed on variables of the same type.
+- Nested branches are supported.
 
-All variables must be declared before scanning
-Adding may only occur to variables of the same type
-
-Nested branches are supported.
+### Example: Branch Testing
 
 ```
-
-Branch testing
-
 |     in1                 |
 |-----[ ]----+----( )-----|
 |     in2    |
@@ -47,11 +65,19 @@ Branch testing
 |-----[ ]----|
 
 001 BST XIC(in1) NXB XIC(in2) NXB XIC(in3) BND OTE(out)
-
 ```
 
+### Example: Simple SPS Simulation
 
-### Currently implemented instructions
+```
+001 ADD(level,inflow,level)
+002 GTR(level,high) OTE(start_pump)
+003 LSS(level,low) OTE(stop_pump)
+004 XIC(run_pump) SUB(level,outflow,level)
+005 BST XIC(start_pump) NXB XIC(run_pump) BND XIO(stop_pump) OTE(run_pump)
+```
+
+## Currently Implemented Instructions
 
 - `XIC`
 - `XIO`
@@ -60,46 +86,44 @@ Branch testing
 - `SUB`
 - `LSS`
 - `GTR`
-- `BST` Branch Start
-- `NXB` Next Branch
-- `BND` Branch End
+- `BST` (Branch Start)
+- `NXB` (Next Branch)
+- `BND` (Branch End)
 
-
-### Instructions I want to add
+## Planned Instructions
 
 - `OTL`
 - `OTU`
-- `PTS` - custom positive transition - (ONS)
-- `NTS` - custom negative transition - 
+- `PTS` (custom positive transition, ONS)
+- `NTS` (custom negative transition)
 - `TON`
 - `TOF`
 - `CTU`
 - `CTD`
 - `EQU`
 - `NEQ`
-- `SYS`tem vars like S:FS, Scan Time, etc. GSV?
+- `SYS` (system variables like S:FS, Scan Time, etc.)
 - `DIV`
 - `MUL`
 - `PID` (yes, PID!)
 
-I know some languages have AND, OR, as blocks. I am not making that.
+Note: There will be no AND, OR blocks.
 
-## Next up
+## Future Development
 
 - More instructions
-- Mapping IO
-- Scan Time
-- Programs
+- IO mapping
+- Scan time optimisation
+- Program structuring
 - Validation
-- Some form of visualiastion
+- Visualisation
 
+## Philosophy and General Rules
 
-## Philosophy/General rules
+- Avoid blocks for variable storage; this is cumbersome and should be limited to SLC5s.
+- PLC code must be uploadable and downloadable without needing a flash or restart.
+- Variables are always globally scoped.
+- The source code should be customisable, allowing reasonably skilled users to create drivers and additional blocks for any ESP/Arduino.
+- Use consistent naming conventions, e.g., less = LSS and greater = GTR, following programming conventions across the platform.
 
-I'll adhere to the following general rules as a rule of thumb or preference.
-
-- No such things as blocks for variable storage. That's kind of annoying and silly and should be relegated to SLC5s
-- "PLC Code" must be uploadable and downloadble, without flash or restart
-- Variables are always globally scoped
-- Source code should be customisable such that any reasonably skilled user can make a driver and additional blocks for any ESP/arduino
-- LESS and GREATER should follow CMD syntax, i.e., less = LSS and greater = GTR. This applies across the platform: follow programming convention.
+I'm aiming to lightweight, simple, and flexible.
