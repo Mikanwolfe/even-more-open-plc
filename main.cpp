@@ -5,6 +5,8 @@
 #include <map>
 #include <variant>
 #include <vector>
+#include <thread>
+#include <chrono>
 #include "LadderLogicParser.h"
 
 // Define the variant type for variables
@@ -57,6 +59,7 @@ void saveVariables(const std::string& filename, const std::map<std::string, Vari
         }
     }
 }
+
 std::string toString(bool value) {
     return value ? "true" : "false";
 }
@@ -88,30 +91,69 @@ void printVariables(const std::map<std::string, Variable>& variableMap) {
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    std::string logicFile = "logic4.txt";
+    bool testMode = false;
+
+    // Parse command-line arguments
+    for (int i = 1; i < argc; ++i) {
+        if (std::string(argv[i]) == "-f" && i + 1 < argc) {
+            logicFile = argv[++i];
+        } else if (std::string(argv[i]) == "-t") {
+            testMode = true;
+        }
+    }
+
     // Load variables
     loadVariables("variables.txt");
 
     // Load logic
     std::vector<std::string> logic;
-    loadLogic("logic4.txt", logic);
+    loadLogic(logicFile, logic);
 
-    // Print variables before execution
-    std::cout << "-------" << "Variables before execution:" << "-------" << std::endl;
-    printVariables(variableMap);
-    std::cout << "-------" << "-------" << std::endl;
+    if (testMode) {
+        // Keep scanning with a delay of 10ms
+        while (true) {
+            // Print variables before execution
+            std::cout << "-------" << "Variables before execution:" << "-------" << std::endl;
+            printVariables(variableMap);
+            std::cout << "-------" << "-------" << std::endl;
 
-    // Parse and execute logic
-    LadderLogicParser parser(logic, variableMap);
-    parser.parseAndExecute();
+            // Parse and execute logic
+            LadderLogicParser parser(logic, variableMap);
+            parser.parseAndExecute();
 
-    // Print variables after execution
-    std::cout << "-------" << "Variables after execution:" << "-------" << std::endl;
-    printVariables(variableMap);
-    std::cout << "-------" << "-------" << std::endl;
+            // Print variables after execution
+            std::cout << "-------" << "Variables after execution:" << "-------" << std::endl;
+            printVariables(variableMap);
+            std::cout << "-------" << "-------" << std::endl;
 
-    // Save variables
-    saveVariables("variables.txt", variableMap);
+            // Save variables
+            saveVariables("variables.txt", variableMap);
+
+            // Delay for 10ms
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+    } else {
+        // Single execution mode
+
+        // Print variables before execution
+        std::cout << "-------" << "Variables before execution:" << "-------" << std::endl;
+        printVariables(variableMap);
+        std::cout << "-------" << "-------" << std::endl;
+
+        // Parse and execute logic
+        LadderLogicParser parser(logic, variableMap);
+        parser.parseAndExecute();
+
+        // Print variables after execution
+        std::cout << "-------" << "Variables after execution:" << "-------" << std::endl;
+        printVariables(variableMap);
+        std::cout << "-------" << "-------" << std::endl;
+
+        // Save variables
+        saveVariables("variables.txt", variableMap);
+    }
 
     return 0;
 }
