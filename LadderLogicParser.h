@@ -17,6 +17,7 @@ private:
     std::vector<std::string> logic;
     std::map<std::string, Variable>& variableMap;
     int lineState;
+    bool endFound;
     
     void handleInstruction(const std::string& instruction);
     bool getBoolValue(const std::string& varName);
