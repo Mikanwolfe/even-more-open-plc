@@ -45,11 +45,11 @@ void LadderLogicParser::executeLogic() {
 
     
     // Simulate a delay between scans
-    std::this_thread::sleep_for(milliseconds(1));
+    // std::this_thread::sleep_for(milliseconds(1));
     auto end = high_resolution_clock::now();
-    scanTime = duration_cast<milliseconds>(end - start).count();
+    scanTime = duration_cast<microseconds>(end - start).count();
     
-    std::cout << "Scan Time: " << scanTime << " ms" << std::endl;
+    std::cout << "Scan Time: " << scanTime << " us" << std::endl;
 }
 
 void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {

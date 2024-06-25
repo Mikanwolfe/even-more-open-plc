@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
             // Print variables after execution
             std::cout << "-------" << "Variables after execution:" << "-------" << std::endl;
             printVariables(variableMap);
-            std::cout << "Scan time: " << parser.scanTime << " ms" << std::endl;
+            std::cout << "Scan time: " << parser.scanTime << " us" << std::endl;
             std::cout << "-------" << "-------" << std::endl;
 
             // Save variables
