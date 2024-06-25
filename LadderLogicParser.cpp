@@ -72,6 +72,24 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
                 }
                 setBoolValue(params, currentBranchState);
                 std::cout << "OTE(" << params << ") = " << boolToString(currentBranchState) << std::endl;
+            } else if (opcode == "OTL") {
+                if (params.empty()) {
+                    std::cerr << "OTL instruction missing parameters." << std::endl;
+                    return;
+                }
+                if (currentBranchState) {
+                    setBoolValue(params, true);
+                }
+                std::cout << "OTL(" << params << ") = " << boolToString(getBoolValue(params)) << std::endl;
+            } else if (opcode == "OTU") {
+                if (params.empty()) {
+                    std::cerr << "OTU instruction missing parameters." << std::endl;
+                    return;
+                }
+                if (currentBranchState) {
+                    setBoolValue(params, false);
+                }
+                std::cout << "OTU(" << params << ") = " << boolToString(getBoolValue(params)) << std::endl;
             } else if (opcode == "ADD") {
                 std::istringstream paramStream(params);
                 std::string var1, var2, var3;
@@ -115,9 +133,6 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
                     std::cerr << "LSS instruction has incomplete parameters." << std::endl;
                     return;
                 }
-                if(!currentBranchState) {
-                    return; 
-                }
                 currentBranchState = currentBranchState && handleLssInstruction(var1, var2);
             } else if (opcode == "GTR") {
                 std::istringstream paramStream(params);
@@ -128,9 +143,6 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
                 if (var1.empty() || var2.empty()) {
                     std::cerr << "GTR instruction has incomplete parameters." << std::endl;
                     return;
-                }
-                if(!currentBranchState) {
-                    return; 
                 }
                 currentBranchState = currentBranchState && handleGtrInstruction(var1, var2);
             } else if (opcode == "BST") {
