@@ -74,6 +74,10 @@ void LadderLogicParser::parseAndExecute() {
                 std::cerr << "ADD instruction has incomplete parameters." << std::endl;
                 return;
             }
+
+            if (!lineState) {
+                return; // Do not run this instruction if line state is LOW
+            }
             handleAddInstruction(var1, var2, var3);
         } else if (opcode == "SUB") {
             std::istringstream paramStream(params);
@@ -86,6 +90,11 @@ void LadderLogicParser::parseAndExecute() {
                 std::cerr << "SUB instruction has incomplete parameters." << std::endl;
                 return;
             }
+
+            if (!lineState) {
+                return; // Do not run this instruction if line state is LOW
+            }
+
             handleSubInstruction(var1, var2, var3);
         } else if (opcode == "LSS") {
             std::istringstream paramStream(params);

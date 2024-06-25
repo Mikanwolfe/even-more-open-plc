@@ -94,7 +94,7 @@ int main() {
 
     // Load logic
     std::vector<std::string> logic;
-    loadLogic("logic.txt", logic);
+    loadLogic("logic2.txt", logic);
 
     // Print variables before execution
     std::cout << "-------" << "Variables before execution:" << "-------" << std::endl;

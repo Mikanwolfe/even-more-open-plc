@@ -1,2 +1,6 @@
-001 XIC(var1) XIO(var2) OTE(var3) 
-002 END
+
+A simple SPS
+
+001 ADD(level,inflow,level)
+002 GTR(level,high) OTE(run_pump)
+003 XIC(run_pump) SUB(level,outflow,level)

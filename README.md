@@ -96,6 +96,24 @@ var3 = false
 --------------
 ```
 
+The variables are
+```
+i1 int 5
+i2 int 15
+r1 bool 1
+r2 bool 0
+run_pump bool 0
+var1 bool 0
+var11 real 2
+var12 real 3
+var13 real 5
+var2 bool 0
+var21 real 5
+var22 real 3
+var23 real 2
+var3 bool 0
+```
+
 
 ### Currently implemented instructions
 
