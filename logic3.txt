@@ -1,2 +1,4 @@
-001 XIC(var1) XIC(var2) OTE(var3) // AND Statement
-002 END
+
+Branch testing
+
+001 BST XIC(in1) NXB XIC(in2) NXB XIC(in3) BND OTE(out)

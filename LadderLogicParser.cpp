@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <stack>
 
 LadderLogicParser::LadderLogicParser(const std::vector<std::string>& logic, std::map<std::string, Variable>& variableMap)
     : logic(logic), variableMap(variableMap), lineState(true), endFound(false) {}
@@ -9,7 +10,6 @@ LadderLogicParser::LadderLogicParser(const std::vector<std::string>& logic, std:
 std::string boolToString(bool value) {
     return value ? "true" : "false";
 }
-
 
 void LadderLogicParser::parseAndExecute() {
     for (const auto& line : logic) {
@@ -22,110 +22,134 @@ void LadderLogicParser::parseAndExecute() {
             continue;
         }
 
-        std::string instruction;
-        lineState = 1; // Reset line state for each new line
-        while (iss >> instruction) {
-            handleInstruction(instruction);
+        std::vector<std::string> tokens;
+        while (iss >> token) {
+            tokens.push_back(token);
         }
-    }
-}void LadderLogicParser::handleInstruction(const std::string& instruction) {
-    if (endFound) {
-        return;
-    }
 
-    std::string opcode = instruction.substr(0, 3);
-    std::string params = (instruction.length() > 3) ? instruction.substr(4, instruction.length() - 5) : "";
-
-    try {
-        if (opcode == "END") {
-            endFound = true;
-            std::cout << "End found, stopping further instructions." << std::endl;
-        } else if (opcode == "XIC") {
-            if (params.empty()) {
-                std::cerr << "XIC instruction missing parameters." << std::endl;
-                return;
-            }
-            bool value = getBoolValue(params);
-            lineState = lineState && value;
-            std::cout << "XIC(" << params << ") = " << boolToString(value) << ", Line = " << boolToString(lineState) << std::endl;
-        } else if (opcode == "XIO") {
-            if (params.empty()) {
-                std::cerr << "XIO instruction missing parameters." << std::endl;
-                return;
-            }
-            bool value = !getBoolValue(params);
-            lineState = lineState && value;
-            std::cout << "XIO(" << params << ") = " << boolToString(value) << ", Line = " << boolToString(lineState) << std::endl;
-        } else if (opcode == "OTE") {
-            if (params.empty()) {
-                std::cerr << "OTE instruction missing parameters." << std::endl;
-                return;
-            }
-            setBoolValue(params, lineState);
-            std::cout << "OTE(" << params << ") = " << lineState << std::endl;
-        } else if (opcode == "ADD") {
-            std::istringstream paramStream(params);
-            std::string var1, var2, var3;
-            std::getline(paramStream, var1, ',');
-            std::getline(paramStream, var2, ',');
-            std::getline(paramStream, var3, ',');
-
-            if (var1.empty() || var2.empty() || var3.empty()) {
-                std::cerr << "ADD instruction has incomplete parameters." << std::endl;
-                return;
-            }
-
-            if (!lineState) {
-                return; // Do not run this instruction if line state is LOW
-            }
-            handleAddInstruction(var1, var2, var3);
-        } else if (opcode == "SUB") {
-            std::istringstream paramStream(params);
-            std::string var1, var2, var3;
-            std::getline(paramStream, var1, ',');
-            std::getline(paramStream, var2, ',');
-            std::getline(paramStream, var3, ',');
-
-            if (var1.empty() || var2.empty() || var3.empty()) {
-                std::cerr << "SUB instruction has incomplete parameters." << std::endl;
-                return;
-            }
-
-            if (!lineState) {
-                return; // Do not run this instruction if line state is LOW
-            }
-
-            handleSubInstruction(var1, var2, var3);
-        } else if (opcode == "LSS") {
-            std::istringstream paramStream(params);
-            std::string var1, var2;
-            std::getline(paramStream, var1, ',');
-            std::getline(paramStream, var2, ',');
-
-            if (var1.empty() || var2.empty()) {
-                std::cerr << "LSS instruction has incomplete parameters." << std::endl;
-                return;
-            }
-            lineState = lineState && handleLssInstruction(var1, var2);
-        } else if (opcode == "GTR") {
-            std::istringstream paramStream(params);
-            std::string var1, var2;
-            std::getline(paramStream, var1, ',');
-            std::getline(paramStream, var2, ',');
-
-            if (var1.empty() || var2.empty()) {
-                std::cerr << "GTR instruction has incomplete parameters." << std::endl;
-                return;
-            }
-            lineState = lineState && handleGtrInstruction(var1, var2);
-        } else {
-            std::cerr << "Unknown instruction: " << instruction << std::endl;
-        }
-    } catch (const std::exception& e) {
-        std::cerr << opcode << " instruction error: " << e.what() << std::endl;
+        lineState = true; // Reset line state for each new line
+        handleTokens(tokens);
     }
 }
 
+void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
+    std::stack<bool> branchStack;
+    bool branchResult = true;
+    bool currentBranchState = true;
+
+    size_t i = 0;
+    while (i < tokens.size()) {
+        const std::string& instruction = tokens[i];
+        std::string opcode = instruction.substr(0, 3);
+        std::string params = (instruction.length() > 3) ? instruction.substr(4, instruction.length() - 5) : "";
+
+        try {
+            if (opcode == "END") {
+                endFound = true;
+                std::cout << "End found, stopping further instructions." << std::endl;
+                return;
+            } else if (opcode == "XIC") {
+                if (params.empty()) {
+                    std::cerr << "XIC instruction missing parameters." << std::endl;
+                    return;
+                }
+                bool value = getBoolValue(params);
+                currentBranchState = currentBranchState && value;
+                std::cout << "XIC(" << params << ") = " << boolToString(value) << ", Line = " << boolToString(currentBranchState) << std::endl;
+            } else if (opcode == "XIO") {
+                if (params.empty()) {
+                    std::cerr << "XIO instruction missing parameters." << std::endl;
+                    return;
+                }
+                bool value = !getBoolValue(params);
+                currentBranchState = currentBranchState && value;
+                std::cout << "XIO(" << params << ") = " << boolToString(value) << ", Line = " << boolToString(currentBranchState) << std::endl;
+            } else if (opcode == "OTE") {
+                if (params.empty()) {
+                    std::cerr << "OTE instruction missing parameters." << std::endl;
+                    return;
+                }
+                setBoolValue(params, currentBranchState);
+                std::cout << "OTE(" << params << ") = " << boolToString(currentBranchState) << std::endl;
+            } else if (opcode == "ADD") {
+                std::istringstream paramStream(params);
+                std::string var1, var2, var3;
+                std::getline(paramStream, var1, ',');
+                std::getline(paramStream, var2, ',');
+                std::getline(paramStream, var3, ',');
+
+                if (var1.empty() || var2.empty() || var3.empty()) {
+                    std::cerr << "ADD instruction has incomplete parameters." << std::endl;
+                    return;
+                }
+
+                if (!lineState) {
+                    return; // Do not run this instruction if line state is LOW
+                }
+                handleAddInstruction(var1, var2, var3);
+            } else if (opcode == "SUB") {
+                std::istringstream paramStream(params);
+                std::string var1, var2, var3;
+                std::getline(paramStream, var1, ',');
+                std::getline(paramStream, var2, ',');
+                std::getline(paramStream, var3, ',');
+
+                if (var1.empty() || var2.empty() || var3.empty()) {
+                    std::cerr << "SUB instruction has incomplete parameters." << std::endl;
+                    return;
+                }
+
+                if (!lineState) {
+                    return; // Do not run this instruction if line state is LOW
+                }
+
+                handleSubInstruction(var1, var2, var3);
+            } else if (opcode == "LSS") {
+                std::istringstream paramStream(params);
+                std::string var1, var2;
+                std::getline(paramStream, var1, ',');
+                std::getline(paramStream, var2, ',');
+
+                if (var1.empty() || var2.empty()) {
+                    std::cerr << "LSS instruction has incomplete parameters." << std::endl;
+                    return;
+                }
+                currentBranchState = currentBranchState && handleLssInstruction(var1, var2);
+            } else if (opcode == "GTR") {
+                std::istringstream paramStream(params);
+                std::string var1, var2;
+                std::getline(paramStream, var1, ',');
+                std::getline(paramStream, var2, ',');
+
+                if (var1.empty() || var2.empty()) {
+                    std::cerr << "GTR instruction has incomplete parameters." << std::endl;
+                    return;
+                }
+                currentBranchState = currentBranchState && handleGtrInstruction(var1, var2);
+            } else if (opcode == "BST") {
+                branchStack.push(branchResult);
+                branchResult = false;
+                currentBranchState = true;
+                std::cout << "Branch Start, pushing current branch result to stack." << std::endl;
+            } else if (opcode == "NXB") {
+                branchResult = branchResult || currentBranchState;
+                currentBranchState = true;
+                std::cout << "Next Branch, updating branch result to " << boolToString(branchResult) << std::endl;
+            } else if (opcode == "BND") {
+                branchResult = branchResult || currentBranchState;
+                currentBranchState = branchStack.top();
+                branchStack.pop();
+                currentBranchState = currentBranchState && branchResult;
+                std::cout << "Branch End, updating branch result to " << boolToString(branchResult) << std::endl;
+            } else {
+                std::cerr << "Unknown instruction: " << instruction << std::endl;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << opcode << " instruction error: " << e.what() << std::endl;
+        }
+        ++i;
+    }
+}
 
 void LadderLogicParser::handleAddInstruction(const std::string& var1, const std::string& var2, const std::string& var3) {
     if (variableMap.find(var1) != variableMap.end() && variableMap.find(var2) != variableMap.end()) {
@@ -210,7 +234,6 @@ bool LadderLogicParser::handleGtrInstruction(const std::string& var1, const std:
         return false;
     }
 }
-
 
 bool LadderLogicParser::getBoolValue(const std::string& varName) {
     auto it = variableMap.find(varName);

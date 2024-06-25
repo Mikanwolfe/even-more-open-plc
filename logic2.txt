@@ -1,5 +1,6 @@
 
 A simple SPS
+We need branches for latching.
 
 001 ADD(level,inflow,level)
 002 GTR(level,high) OTE(run_pump)

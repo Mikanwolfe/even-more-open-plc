@@ -19,7 +19,7 @@ private:
     bool lineState;
     bool endFound;
     
-    void handleInstruction(const std::string& instruction);
+    void handleTokens(const std::vector<std::string>& tokens);
     void handleAddInstruction(const std::string& var1, const std::string& var2, const std::string& var3);
     void handleSubInstruction(const std::string& var1, const std::string& var2, const std::string& var3);
     bool handleLssInstruction(const std::string& var1, const std::string& var2);
