@@ -9,6 +9,6 @@ ton_acc int 0
 timer_is_done bool 0
 
 
-001 XIC(en_timer) TON(ton_dn,ton_tt,ton_pre,ton_acc)
+001 XIO(timer_is_done) XIC(en_timer) TON(ton_dn,ton_tt,ton_pre,ton_acc)
 002 XIC(ton_dn) OTE(timer_is_done)
 

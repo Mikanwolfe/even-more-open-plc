@@ -1,6 +1,6 @@
 en_timer bool 1
-timer_is_done bool 0
-ton_acc int 90
-ton_dn bool 0
-ton_pre int 10000
-ton_tt bool 1
+timer_is_done bool 1
+ton_acc int 1000
+ton_dn bool 1
+ton_pre int 1000
+ton_tt bool 0
