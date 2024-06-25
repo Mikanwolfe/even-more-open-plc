@@ -57,6 +57,9 @@ void saveVariables(const std::string& filename, const std::map<std::string, Vari
         }
     }
 }
+std::string toString(bool value) {
+    return value ? "true" : "false";
+}
 
 // Function to load logic from a file
 void loadLogic(const std::string& filename, std::vector<std::string>& logic) {
@@ -77,7 +80,7 @@ void printVariables(const std::map<std::string, Variable>& variableMap) {
         if (std::holds_alternative<int>(value)) {
             std::cout << std::get<int>(value);
         } else if (std::holds_alternative<bool>(value)) {
-            std::cout << std::get<bool>(value);
+            std::cout << toString(std::get<bool>(value));
         } else if (std::holds_alternative<double>(value)) {
             std::cout << std::get<double>(value);
         }

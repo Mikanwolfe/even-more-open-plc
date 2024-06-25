@@ -33,6 +33,70 @@ Instructions must be separated by a space ` `
 All variables must be declared before scanning
 Adding may only occur to variables of the same type
 
+### Example scan
+
+logic.txt
+
+```
+
+This represents:
+|     var1    var2    var3
+|-----[ ]-----[/]-----( )-----|
+
+001 XIC(var1) XIO(var2) OTE(var3)
+002 ADD(var11,var12,var13)
+003 SUB(var21,var22,var23)
+004 LSS(i1,i2) OTE(r1)
+004 GTR(i1,i2) OTE(r2)
+006 END
+```
+
+Gives the following output
+
+```
+-------Variables before execution:-------
+i1 = 5
+i2 = 15
+r1 = false
+r2 = false
+var1 = false
+var11 = 2
+var12 = 3
+var13 = 5
+var2 = false
+var21 = 5
+var22 = 3
+var23 = 2
+var3 = false
+--------------
+XIC(var1) = 0, Line = 0
+XIO(var2) = 1, Line = 0
+OTE(var3) = 0
+ADD(var11,var12,var13) = 5
+SUB(var21,var22,var23) = 2
+LSS(i1,i2) = LSS(5,15) = true
+OTE(r1) = 1
+GTR(i1,i2) = GTR(5,15) = false
+OTE(r2) = 0
+End found, stopping further instructions.
+-------Variables after execution:-------
+i1 = 5
+i2 = 15
+r1 = true
+r2 = false
+var1 = false
+var11 = 2
+var12 = 3
+var13 = 5
+var2 = false
+var21 = 5
+var22 = 3
+var23 = 2
+var3 = false
+--------------
+```
+
+
 ### Currently implemented instructions
 
 XIC
