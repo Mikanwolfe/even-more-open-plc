@@ -1,7 +1,9 @@
 high real 100
-in1 bool 0
+in1 bool 1
 in2 bool 0
 in3 bool 0
+in5 bool 0
+in6 bool 0
 inflow real 5
 level real 95
 low real 40

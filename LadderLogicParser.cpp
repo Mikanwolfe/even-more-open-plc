@@ -34,6 +34,7 @@ void LadderLogicParser::parseAndExecute() {
 
 void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
     std::stack<bool> branchStack;
+    std::stack<bool> currentBranchStateStack;
     bool branchResult = true;
     bool currentBranchState = true;
 
@@ -128,19 +129,23 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
                 currentBranchState = currentBranchState && handleGtrInstruction(var1, var2);
             } else if (opcode == "BST") {
                 branchStack.push(branchResult);
+                currentBranchStateStack.push(currentBranchState);
                 branchResult = false;
                 currentBranchState = true;
-                std::cout << "Branch Start, pushing current branch result to stack." << std::endl;
+                std::cout << "Branch Start, pushing current branch result and state to stack." << std::endl;
             } else if (opcode == "NXB") {
                 branchResult = branchResult || currentBranchState;
                 currentBranchState = true;
                 std::cout << "Next Branch, updating branch result to " << boolToString(branchResult) << std::endl;
             } else if (opcode == "BND") {
                 branchResult = branchResult || currentBranchState;
+                currentBranchState = currentBranchStateStack.top();
+                currentBranchStateStack.pop();
+                branchResult = branchResult && currentBranchState;
                 currentBranchState = branchStack.top();
                 branchStack.pop();
                 currentBranchState = currentBranchState && branchResult;
-                std::cout << "Branch End, updating branch result to " << boolToString(branchResult) << std::endl;
+                std::cout << "Branch End, updating branch result to " << boolToString(currentBranchState) << std::endl;
             } else {
                 std::cerr << "Unknown instruction: " << instruction << std::endl;
             }

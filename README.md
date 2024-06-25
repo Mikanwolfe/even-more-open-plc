@@ -33,13 +33,13 @@ Instructions must be separated by a space ` `
 All variables must be declared before scanning
 Adding may only occur to variables of the same type
 
-The parser uses a stack to handle branches. Not sure how this will go with nested branches.
+Nested branches are supported.
 
 ```
 
 Branch testing
 
-|     in1
+|     in1                 |
 |-----[ ]----+----( )-----|
 |     in2    |
 |-----[ ]----|
