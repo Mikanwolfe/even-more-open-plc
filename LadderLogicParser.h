@@ -20,6 +20,8 @@ private:
     bool endFound;
     
     void handleInstruction(const std::string& instruction);
+    void handleSubInstruction(const std::string& var1, const std::string& var2, const std::string& var3);
+    void handleAddInstruction(const std::string& var1, const std::string& var2, const std::string& var3);
     bool getBoolValue(const std::string& varName);
     void setBoolValue(const std::string& varName, bool value);
 };
