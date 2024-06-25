@@ -53,37 +53,46 @@ Branch testing
 
 ### Currently implemented instructions
 
-XIC
+- `XIC`
+- `XIO`
+- `OTE`
+- `ADD`
+- `SUB`
+- `LSS`
+- `GTR`
+- `BST` Branch Start
+- `NXB` Next Branch
+- `BND` Branch End
 
-- Excite on Close
 
-XIO
+### Instructions I want to add
 
-- Excite on Open
+- `OTL`
+- `OTU`
+- `PTS` - custom positive transition - (ONS)
+- `NTS` - custom negative transition - 
+- `TON`
+- `TOF`
+- `CTU`
+- `CTD`
+- `EQU`
+- `NEQ`
+- `SYS`tem vars like S:FS, Scan Time, etc. GSV?
+- `DIV`
+- `MUL`
+- `PID` (yes, PID!)
 
-OTE
-
-- Output Terminal
-
-ADD
-
-- Adds INTs or REALs
-
-SUB
-
-- Subtracts INTs or REALs
-
-LSS
-
-- Less than
-
-GTR
-
-- Greater than
-
+I know some languages have AND, OR, as blocks. I am not making that.
 
 ## Next up
-A simple SPS simulation
+
+- More instructions
+- Mapping IO
+- Scan Time
+- Programs
+- Validation
+- Some form of visualiastion
+
 
 ## Philosophy/General rules
 

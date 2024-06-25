@@ -5,7 +5,7 @@ in3 bool 0
 in5 bool 0
 in6 bool 0
 inflow real 5
-level real 90
+level real 95
 low real 40
 out bool 0
 outflow real 10
