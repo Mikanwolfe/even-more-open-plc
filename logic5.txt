@@ -1,3 +1,9 @@
-BST XIO(test_1) OTE(test_2) BND
-BST ADD(var1, var2, var3) BND
-BST XIC(var4) OTE(test_3) BND
+
+A true SPS with latching and branches
+Now with instruction latching!
+
+001 ADD(level,inflow,level)
+002 GTR(level,high) OTL(run_pump)
+003 LSS(level,low) OTU(run_pump)
+004 XIC(run_pump) SUB(level,outflow,level)
+

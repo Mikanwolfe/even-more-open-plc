@@ -69,12 +69,23 @@ Key points:
 
 ### Example: Simple SPS Simulation
 
+A simple simulation of an SPS with a single pump and a level transmitter.
+
 ```
 001 ADD(level,inflow,level)
 002 GTR(level,high) OTE(start_pump)
 003 LSS(level,low) OTE(stop_pump)
 004 XIC(run_pump) SUB(level,outflow,level)
 005 BST XIC(start_pump) NXB XIC(run_pump) BND XIO(stop_pump) OTE(run_pump)
+```
+
+The same can be achieved with OTL's and OTUs
+
+```
+001 ADD(level,inflow,level)
+002 GTR(level,high) OTL(run_pump)
+003 LSS(level,low) OTU(run_pump)
+004 XIC(run_pump) SUB(level,outflow,level)
 ```
 
 ## Currently Implemented Instructions

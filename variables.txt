@@ -5,10 +5,8 @@ in3 bool 0
 in5 bool 0
 in6 bool 0
 inflow real 10
-level real 436
+level real 520
 low real 400
 out bool 0
 outflow real 30
 run_pump bool 0
-start_pump bool 0
-stop_pump bool 0
