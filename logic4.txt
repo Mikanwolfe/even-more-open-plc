@@ -1,2 +1,8 @@
-001 BST XIC(var1) BND BST XIC(var2) BND OTE(var3) // Or statement
-002 END
+
+A true SPS with latching and branches
+
+001 ADD(level,inflow,level)
+002 GTR(level,high) OTE(start_pump)
+003 LSS(level,low) OTE(stop_pump)
+004 XIC(run_pump) SUB(level,outflow,level)
+005 BST XIC(start_pump) NXB XIC(run_pump) BND XIO(stop_pump) OTE(run_pump)

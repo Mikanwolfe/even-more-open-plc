@@ -84,7 +84,7 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
                     return;
                 }
 
-                if (!lineState) {
+                if (!currentBranchState) {
                     return; // Do not run this instruction if line state is LOW
                 }
                 handleAddInstruction(var1, var2, var3);
@@ -100,7 +100,7 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
                     return;
                 }
 
-                if (!lineState) {
+                if (!currentBranchState) {
                     return; // Do not run this instruction if line state is LOW
                 }
 
@@ -115,6 +115,9 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
                     std::cerr << "LSS instruction has incomplete parameters." << std::endl;
                     return;
                 }
+                if(!currentBranchState) {
+                    return; 
+                }
                 currentBranchState = currentBranchState && handleLssInstruction(var1, var2);
             } else if (opcode == "GTR") {
                 std::istringstream paramStream(params);
@@ -125,6 +128,9 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
                 if (var1.empty() || var2.empty()) {
                     std::cerr << "GTR instruction has incomplete parameters." << std::endl;
                     return;
+                }
+                if(!currentBranchState) {
+                    return; 
                 }
                 currentBranchState = currentBranchState && handleGtrInstruction(var1, var2);
             } else if (opcode == "BST") {
