@@ -3,7 +3,7 @@
 #include <sstream>
 
 LadderLogicParser::LadderLogicParser(const std::vector<std::string>& logic, std::map<std::string, Variable>& variableMap)
-    : logic(logic), variableMap(variableMap) {}
+    : logic(logic), variableMap(variableMap), lineState(1) {}
 
 void LadderLogicParser::parseAndExecute() {
     for (const auto& line : logic) {
@@ -17,6 +17,7 @@ void LadderLogicParser::parseAndExecute() {
         }
 
         std::string instruction;
+        lineState = 1; // Reset line state for each new line
         while (iss >> instruction) {
             handleInstruction(instruction);
         }
@@ -24,33 +25,28 @@ void LadderLogicParser::parseAndExecute() {
 }
 
 void LadderLogicParser::handleInstruction(const std::string& instruction) {
+    // Ensure the instruction has a minimum length
+    if (instruction.length() < 4) {
+        std::cerr << "Invalid instruction: " << instruction << std::endl;
+        return;
+    }
+
     std::string opcode = instruction.substr(0, 3);
     std::string params = instruction.substr(4, instruction.length() - 5);
 
     if (opcode == "XIC") {
         bool value = getBoolValue(params);
-        std::cout << "XIC(" << params << ") = " << value << std::endl;
+        lineState = lineState && value;
+        std::cout << "XIC(" << params << ") = " << value << ", Line = " << lineState << std::endl;
     } else if (opcode == "XIO") {
         bool value = !getBoolValue(params);
-        std::cout << "XIO(" << params << ") = " << value << std::endl;
+        lineState = lineState && value;
+        std::cout << "XIO(" << params << ") = " << value << ", Line = " << lineState << std::endl;
     } else if (opcode == "OTE") {
-        bool xicValue = getBoolValue("XIC"); // This should be adjusted to the actual logic
-        bool xioValue = getBoolValue("XIO"); // This should be adjusted to the actual logic
-        bool result = xicValue && xioValue;
-        setBoolValue(params, result);
-        std::cout << "OTE(" << params << ") = " << result << std::endl;
-    } else if (opcode == "ADD") {
-        // Split parameters for ADD
-        std::istringstream paramStream(params);
-        std::string var1, var2, var3;
-        std::getline(paramStream, var1, ',');
-        std::getline(paramStream, var2, ',');
-        std::getline(paramStream, var3, ',');
-
-        double val1 = std::holds_alternative<int>(variableMap[var1]) ? std::get<int>(variableMap[var1]) : std::get<double>(variableMap[var1]);
-        double val2 = std::holds_alternative<int>(variableMap[var2]) ? std::get<int>(variableMap[var2]) : std::get<double>(variableMap[var2]);
-        variableMap[var3] = val1 + val2;
-        std::cout << "ADD(" << var1 << "," << var2 << "," << var3 << ") = " << val1 + val2 << std::endl;
+        setBoolValue(params, lineState);
+        std::cout << "OTE(" << params << ") = " << lineState << std::endl;
+    } else {
+        std::cerr << "Unknown instruction: " << instruction << std::endl;
     }
 }
 
