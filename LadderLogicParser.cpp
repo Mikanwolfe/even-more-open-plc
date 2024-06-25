@@ -47,7 +47,7 @@ void LadderLogicParser::parseAndExecute() {
             }
             bool value = getBoolValue(params);
             lineState = lineState && value;
-            std::cout << "XIC(" << params << ") = " << value << ", Line = " << lineState << std::endl;
+            std::cout << "XIC(" << params << ") = " << boolToString(value) << ", Line = " << boolToString(lineState) << std::endl;
         } else if (opcode == "XIO") {
             if (params.empty()) {
                 std::cerr << "XIO instruction missing parameters." << std::endl;
@@ -55,7 +55,7 @@ void LadderLogicParser::parseAndExecute() {
             }
             bool value = !getBoolValue(params);
             lineState = lineState && value;
-            std::cout << "XIO(" << params << ") = " << value << ", Line = " << lineState << std::endl;
+            std::cout << "XIO(" << params << ") = " << boolToString(value) << ", Line = " << boolToString(lineState) << std::endl;
         } else if (opcode == "OTE") {
             if (params.empty()) {
                 std::cerr << "OTE instruction missing parameters." << std::endl;
