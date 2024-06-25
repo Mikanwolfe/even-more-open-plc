@@ -39,6 +39,25 @@ void loadVariables(const std::string& filename) {
     }
 }
 
+// Function to save variables to a file
+void saveVariables(const std::string& filename, const std::map<std::string, Variable>& variableMap) {
+    std::ofstream file(filename);
+    if (!file) {
+        std::cerr << "Failed to open " << filename << std::endl;
+        return;
+    }
+    for (const auto& [name, value] : variableMap) {
+        file << name << " ";
+        if (std::holds_alternative<int>(value)) {
+            file << "int " << std::get<int>(value) << "\n";
+        } else if (std::holds_alternative<bool>(value)) {
+            file << "bool " << std::get<bool>(value) << "\n";
+        } else if (std::holds_alternative<double>(value)) {
+            file << "real " << std::get<double>(value) << "\n";
+        }
+    }
+}
+
 // Function to load logic from a file
 void loadLogic(const std::string& filename, std::vector<std::string>& logic) {
     std::ifstream file(filename);
@@ -52,6 +71,20 @@ void loadLogic(const std::string& filename, std::vector<std::string>& logic) {
     }
 }
 
+void printVariables(const std::map<std::string, Variable>& variableMap) {
+    for (const auto& [name, value] : variableMap) {
+        std::cout << name << " = ";
+        if (std::holds_alternative<int>(value)) {
+            std::cout << std::get<int>(value);
+        } else if (std::holds_alternative<bool>(value)) {
+            std::cout << std::get<bool>(value);
+        } else if (std::holds_alternative<double>(value)) {
+            std::cout << std::get<double>(value);
+        }
+        std::cout << std::endl;
+    }
+}
+
 int main() {
     // Load variables
     loadVariables("variables.txt");
@@ -60,9 +93,20 @@ int main() {
     std::vector<std::string> logic;
     loadLogic("logic.txt", logic);
 
+    // Print variables before execution
+    std::cout << "Variables before execution:" << std::endl;
+    printVariables(variableMap);
+
     // Parse and execute logic
     LadderLogicParser parser(logic, variableMap);
     parser.parseAndExecute();
+
+    // Print variables after execution
+    std::cout << "Variables after execution:" << std::endl;
+    printVariables(variableMap);
+
+    // Save variables
+    saveVariables("variables.txt", variableMap);
 
     return 0;
 }
