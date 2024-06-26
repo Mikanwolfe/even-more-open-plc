@@ -110,7 +110,7 @@ The same can be achieved with OTL's and OTUs
 ## Planned Instructions
 
 - `ONR` One Shot Rising
-- `ONF` One Shot Fallin
+- `ONF` One Shot Falling
 - `AFI` Always False Instruction
 - `TOG` Toggle
 - `CTU`

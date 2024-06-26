@@ -11,6 +11,6 @@ tof_tt bool 0
 tof_pre int 10000
 tof_acc int 0
 
-001 XIC(en_timer) TON(ton_dn,ton_tt,ton_pre,ton_acc)
+001 XIO(en_timer) TON(ton_dn,ton_tt,ton_pre,ton_acc)
 002 XIO(ton_dn) TOF(tof_dn,tof_tt,tof_pre,tof_acc)
 
