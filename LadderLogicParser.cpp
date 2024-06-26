@@ -87,46 +87,13 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
 }
 void LadderLogicParser::handleInstruction(const std::string& opcode, const std::string& params, bool& currentBranchState) {
     if (opcode == "XIC") {
-        if (params.empty()) {
-            std::cerr << "XIC instruction missing parameters." << std::endl;
-            return;
-        }
-        bool value = getBoolValue(params);
-        currentBranchState = currentBranchState && value;
-        std::cout << "XIC[" << params << "]" << (currentBranchState ? " === " : " --- ");
+        handleXicInstruction(params, currentBranchState);
     } else if (opcode == "XIO") {
-        if (params.empty()) {
-            std::cerr << "XIO instruction missing parameters." << std::endl;
-            return;
-        }
-        bool value = !getBoolValue(params);
-        currentBranchState = currentBranchState && value;
-        std::cout << "XIO[" << params << "]" << (currentBranchState ? " === " : " --- ");
+        handleXioInstruction(params, currentBranchState);
     } else if (opcode == "OTE") {
-        if (params.empty()) {
-            std::cerr << "OTE instruction missing parameters." << std::endl;
-            return;
-        }
-        setBoolValue(params, currentBranchState);
-        std::cout << "OTE[" << params << "]" << (currentBranchState ? " === " : " --- ");
+        handleOteInstruction(params, currentBranchState);
     } else if (opcode == "OTL") {
-        if (params.empty()) {
-            std::cerr << "OTL instruction missing parameters." << std::endl;
-            return;
-        }
-        if (currentBranchState) {
-            setBoolValue(params, true);
-        }
-        std::cout << "OTL[" << params << "]" << (getBoolValue(params) ? " === " : " --- ");
-    } else if (opcode == "OTU") {
-        if (params.empty()) {
-            std::cerr << "OTU instruction missing parameters." << std::endl;
-            return;
-        }
-        if (currentBranchState) {
-            setBoolValue(params, false);
-        }
-        std::cout << "OTU[" << params << "]" << (getBoolValue(params) ? " === " : " --- ");
+        handleOtlInstruction(params, currentBranchState);
     } else if (opcode == "AFI") {
         currentBranchState = false;
         std::cout << "AFI" << (currentBranchState ? " === " : " --- ");
@@ -206,6 +173,47 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
     } else {
         std::cerr << "Unknown instruction: " << opcode << std::endl;
     }
+}
+
+
+void LadderLogicParser::handleXicInstruction(const std::string& params, bool& currentBranchState) {
+    if (params.empty()) {
+        std::cerr << "XIC instruction missing parameters." << std::endl;
+        return;
+    }
+    bool value = getBoolValue(params);
+    currentBranchState = currentBranchState && value;
+    std::cout << "XIC[" << params << "]" << (currentBranchState ? " === " : " --- ");
+}
+
+void LadderLogicParser::handleXioInstruction(const std::string& params, bool& currentBranchState) {
+    if (params.empty()) {
+        std::cerr << "XIO instruction missing parameters." << std::endl;
+        return;
+    }
+    bool value = !getBoolValue(params);
+    currentBranchState = currentBranchState && value;
+    std::cout << "XIO[" << params << "]" << (currentBranchState ? " === " : " --- ");
+}
+
+void LadderLogicParser::handleOteInstruction(const std::string& params, bool& currentBranchState) {
+    if (params.empty()) {
+        std::cerr << "OTE instruction missing parameters." << std::endl;
+        return;
+    }
+    setBoolValue(params, currentBranchState);
+    std::cout << "OTE[" << params << "]" << (currentBranchState ? " === " : " --- ");
+}
+
+void LadderLogicParser::handleOtlInstruction(const std::string& params, bool& currentBranchState) {
+    if (params.empty()) {
+        std::cerr << "OTL instruction missing parameters." << std::endl;
+        return;
+    }
+    if (currentBranchState) {
+        setBoolValue(params, true);
+    }
+    std::cout << "OTL[" << params << "]" << (getBoolValue(params) ? " === " : " --- ");
 }
 
 void LadderLogicParser::handleCtuInstruction(const std::string& params, bool& currentBranchState) {

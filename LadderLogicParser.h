@@ -44,4 +44,9 @@ private:
     bool handleOnfInstruction(const std::string& var1, bool& currentBranchState);
     void handleCtuInstruction(const std::string& params, bool& currentBranchState);
     void handleCtdInstruction(const std::string& params, bool& currentBranchState);
+    void handleXicInstruction(const std::string& params, bool& currentBranchState);
+    void handleXioInstruction(const std::string& params, bool& currentBranchState);
+    void handleOteInstruction(const std::string& params, bool& currentBranchState);
+    void handleOtlInstruction(const std::string& params, bool& currentBranchState);
+
 };
