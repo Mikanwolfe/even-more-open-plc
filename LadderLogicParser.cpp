@@ -5,12 +5,17 @@
 #include <stack>
 #include <thread>
 #include <chrono>
+#include <cmath>
 
 LadderLogicParser::LadderLogicParser(const std::vector<std::string>& logic, std::map<std::string, Variable>& variableMap)
     : logic(logic), variableMap(variableMap), lineState(true), endFound(false) {}
 
 std::string boolToString(bool value) {
     return value ? "true" : "false";
+}
+
+double LadderLogicParser::roundToTwoDecimals(double value) {
+    return std::round(value * 100.0) / 100.0;
 }
 
 
@@ -214,6 +219,40 @@ void LadderLogicParser::handleOtlInstruction(const std::string& params, bool& cu
         setBoolValue(params, true);
     }
     std::cout << "OTL[" << params << "]" << (getBoolValue(params) ? " === " : " --- ");
+}
+
+bool LadderLogicParser::handleEquInstruction(const std::string& params, bool& currentBranchState) {
+    std::istringstream paramStream(params);
+    std::string var1, var2;
+    std::getline(paramStream, var1, ',');
+    std::getline(paramStream, var2, ',');
+
+    if (var1.empty() || var2.empty()) {
+        std::cerr << "EQU instruction has incomplete parameters." << std::endl;
+        return false;
+    }
+
+    if (variableMap.find(var1) != variableMap.end() && variableMap.find(var2) != variableMap.end()) {
+        bool result;
+        if (std::holds_alternative<int>(variableMap[var1]) && std::holds_alternative<int>(variableMap[var2])) {
+            int val1 = std::get<int>(variableMap[var1]);
+            int val2 = std::get<int>(variableMap[var2]);
+            result = val1 == val2;
+            std::cout << "EQU(" << val1 << " == " << val2 << ")" << (result ? " === " : " --- ");
+        } else if (std::holds_alternative<double>(variableMap[var1]) && std::holds_alternative<double>(variableMap[var2])) {
+            double val1 = roundToTwoDecimals(std::get<double>(variableMap[var1]));
+            double val2 = roundToTwoDecimals(std::get<double>(variableMap[var2]));
+            result = val1 == val2;
+            std::cout << "EQU(" << val1 << " == " << val2 << ")" << (result ? " === " : " --- ");
+        } else {
+            std::cerr << "EQU instruction type mismatch: " << var1 << ", " << var2 << std::endl;
+            return false;
+        }
+        return result;
+    } else {
+        std::cerr << "EQU instruction variables not found: " << var1 << ", " << var2 << std::endl;
+        return false;
+    }
 }
 
 void LadderLogicParser::handleCtuInstruction(const std::string& params, bool& currentBranchState) {

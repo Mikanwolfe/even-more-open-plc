@@ -167,13 +167,13 @@ The same can be achieved with OTL's and OTUs
 - `ONR` One Shot Rising
 - `ONF` One Shot Falling
 - `AFI` Always False Instruction
+- `CTU`
+- `CTD`
+- `EQU`
 
 ## Planned Instructions
 
 - `TOG` Toggle
-- `CTU`
-- `CTD`
-- `EQU`
 - `NEQ`
 - `SYS` (system variables like S:FS, Scan Time, etc.)
 - `DIV`
