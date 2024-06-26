@@ -186,6 +186,10 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         handleTonInstruction(params, currentBranchState);
     } else if (opcode == "TOF") {
         handleTofInstruction(params, currentBranchState);
+    } else if (opcode == "ONR") {
+        currentBranchState = handleOnrInstruction(params, currentBranchState);
+    } else if (opcode == "ONF") {
+        currentBranchState = handleOnfInstruction(params, currentBranchState);
     } else {
         std::cerr << "Unknown instruction: " << opcode << std::endl;
     }
@@ -216,7 +220,33 @@ void LadderLogicParser::handleBranchEnd(std::stack<bool>& branchStack, std::stac
     std::cout << "Branch End, updating branch result to " << boolToString(currentBranchState) << std::endl;
 }
 
+bool LadderLogicParser::handleOnrInstruction(const std::string& var1, bool& currentBranchState) {
+    bool previousState = getBoolValue(var1);
+    if (currentBranchState && !previousState) {
+        setBoolValue(var1, true);
+        currentBranchState = true;
+        std::cout << "ONR(" << var1 << ") = " << boolToString(true) << ", Line = " << boolToString(currentBranchState) << std::endl;
+        return true;
+    }
+    setBoolValue(var1, currentBranchState);
+    currentBranchState = false;
+    std::cout << "ONR(" << var1 << ") = " << boolToString(false) << ", Line = " << boolToString(currentBranchState) << std::endl;
+    return false;
+}
 
+bool LadderLogicParser::handleOnfInstruction(const std::string& var1, bool& currentBranchState) {
+    bool previousState = getBoolValue(var1);
+    if (!currentBranchState && previousState) {
+        setBoolValue(var1, false);
+        currentBranchState = true;
+        std::cout << "ONF(" << var1 << ") = " << boolToString(true) << ", Line = " << boolToString(currentBranchState) << std::endl;
+        return true;
+    }
+    setBoolValue(var1, currentBranchState);
+    currentBranchState = false;
+    std::cout << "ONF(" << var1 << ") = " << boolToString(false) << ", Line = " << boolToString(currentBranchState) << std::endl;
+    return false;
+}
 
 void LadderLogicParser::handleTonInstruction(const std::string& params, bool currentBranchState) {
     std::istringstream paramStream(params);

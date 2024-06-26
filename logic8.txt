@@ -1,0 +1,8 @@
+tof_acc int 0
+tof_dn bool 1
+tof_pre int 10000
+tof_tt bool 0
+onr bool 0
+
+001 ONR(onr) TOF(tof_dn,tof_tt,tof_pre,tof_acc)
+
