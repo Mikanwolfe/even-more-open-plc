@@ -161,6 +161,10 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         }
         currentBranchState = currentBranchState && handleGtrInstruction(var1, var2);
         std::cout << "GTR[" << params << "]" << (currentBranchState ? " === " : " --- ");
+    } else if (opcode == "EQU") {
+        handleEquInstruction(params, currentBranchState);
+    } else if (opcode == "NEQ") {
+        handleNeqInstruction(params, currentBranchState);
     } else if (opcode == "CTU") {
         handleCtuInstruction(params, currentBranchState);
     } else if (opcode == "CTD") {
@@ -171,10 +175,8 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         handleTofInstruction(params, currentBranchState);
     } else if (opcode == "ONR") {
         currentBranchState = handleOnrInstruction(params, currentBranchState);
-        std::cout << "ONR[" << params << "]" << (currentBranchState ? " === " : " --- ");
     } else if (opcode == "ONF") {
         currentBranchState = handleOnfInstruction(params, currentBranchState);
-        std::cout << "ONF[" << params << "]" << (currentBranchState ? " === " : " --- ");
     } else {
         std::cerr << "Unknown instruction: " << opcode << std::endl;
     }
@@ -255,6 +257,41 @@ bool LadderLogicParser::handleEquInstruction(const std::string& params, bool& cu
     }
 }
 
+
+bool LadderLogicParser::handleNeqInstruction(const std::string& params, bool& currentBranchState) {
+    std::istringstream paramStream(params);
+    std::string var1, var2;
+    std::getline(paramStream, var1, ',');
+    std::getline(paramStream, var2, ',');
+
+    if (var1.empty() || var2.empty()) {
+        std::cerr << "NEQ instruction has incomplete parameters." << std::endl;
+        return false;
+    }
+
+    if (variableMap.find(var1) != variableMap.end() && variableMap.find(var2) != variableMap.end()) {
+        bool result;
+        if (std::holds_alternative<int>(variableMap[var1]) && std::holds_alternative<int>(variableMap[var2])) {
+            int val1 = std::get<int>(variableMap[var1]);
+            int val2 = std::get<int>(variableMap[var2]);
+            result = val1 != val2;
+            std::cout << "NEQ(" << val1 << " != " << val2 << ")" << (result ? " === " : " --- ");
+        } else if (std::holds_alternative<double>(variableMap[var1]) && std::holds_alternative<double>(variableMap[var2])) {
+            double val1 = roundToTwoDecimals(std::get<double>(variableMap[var1]));
+            double val2 = roundToTwoDecimals(std::get<double>(variableMap[var2]));
+            result = val1 != val2;
+            std::cout << "NEQ(" << val1 << " != " << val2 << ")" << (result ? " === " : " --- ");
+        } else {
+            std::cerr << "NEQ instruction type mismatch: " << var1 << ", " << var2 << std::endl;
+            return false;
+        }
+        return result;
+    } else {
+        std::cerr << "NEQ instruction variables not found: " << var1 << ", " << var2 << std::endl;
+        return false;
+    }
+}
+
 void LadderLogicParser::handleCtuInstruction(const std::string& params, bool& currentBranchState) {
     std::istringstream paramStream(params);
     std::string pre, acc, ct, dn;
@@ -331,10 +368,12 @@ bool LadderLogicParser::handleOnrInstruction(const std::string& var1, bool& curr
     if (currentBranchState && !previousState) {
         setBoolValue(var1, true);
         currentBranchState = true;
+        std::cout << "ONR[" << var1 << "]" << (currentBranchState ? " === " : " --- ");
         return true;
     }
     setBoolValue(var1, currentBranchState);
     currentBranchState = false;
+    std::cout << "ONR[" << var1 << "]" << (currentBranchState ? " === " : " --- ");
     return false;
 }
 
@@ -343,10 +382,12 @@ bool LadderLogicParser::handleOnfInstruction(const std::string& var1, bool& curr
     if (!currentBranchState && previousState) {
         setBoolValue(var1, false);
         currentBranchState = true;
+        std::cout << "ONF[" << var1 << "]" << (currentBranchState ? " === " : " --- ");
         return true;
     }
     setBoolValue(var1, currentBranchState);
     currentBranchState = false;
+    std::cout << "ONF[" << var1 << "]" << (currentBranchState ? " === " : " --- ");
     return false;
 }
 

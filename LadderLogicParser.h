@@ -39,9 +39,10 @@ private:
     void handleSubInstruction(const std::string& var1, const std::string& var2, const std::string& var3);
     bool handleLssInstruction(const std::string& var1, const std::string& var2);
     bool handleGtrInstruction(const std::string& var1, const std::string& var2);
-    bool handleEquInstruction(const std::string& var1, bool& currentBranchState);
-    bool handleOnrInstruction(const std::string& var1, bool& currentBranchState);
-    bool handleOnfInstruction(const std::string& var1, bool& currentBranchState);
+    bool handleEquInstruction(const std::string& params, bool& currentBranchState);
+    bool handleNeqInstruction(const std::string& params, bool& currentBranchState);
+    bool handleOnrInstruction(const std::string& params, bool& currentBranchState);
+    bool handleOnfInstruction(const std::string& params, bool& currentBranchState);
     void handleCtuInstruction(const std::string& params, bool& currentBranchState);
     void handleCtdInstruction(const std::string& params, bool& currentBranchState);
     void handleXicInstruction(const std::string& params, bool& currentBranchState);

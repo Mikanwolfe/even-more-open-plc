@@ -150,6 +150,14 @@ The same can be achieved with OTL's and OTUs
 004 XIC(run_pump) SUB(level,outflow,level)
 ```
 
+#### A small note on EQU and NEQ
+
+I haven't had to use an EQU on a REAL/Floating point number yet. However, I imagine this would be useful in certain edge cases.
+The parser automatically rounds to 2 decimal places when computing EQU and NEQ - this does not affect the stored value.
+
+This does not apply to LEQ and GEQ... when they get implemented. I'll be using the `<=` operator.
+
+
 ## Currently Implemented Instructions
 
 - `XIC`
@@ -170,11 +178,11 @@ The same can be achieved with OTL's and OTUs
 - `CTU`
 - `CTD`
 - `EQU`
+- `NEQ`
 
 ## Planned Instructions
 
 - `TOG` Toggle
-- `NEQ`
 - `SYS` (system variables like S:FS, Scan Time, etc.)
 - `DIV`
 - `MUL`

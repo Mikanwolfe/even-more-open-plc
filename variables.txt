@@ -1,6 +1,8 @@
 high real 1000
 inflow real 10
-level real 730
+level real 750
 low real 400
 outflow real 30
 run_pump bool 0
+start_pump bool 0
+stop_pump bool 0
