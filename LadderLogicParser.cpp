@@ -127,6 +127,9 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
             setBoolValue(params, false);
         }
         std::cout << "OTU[" << params << "]" << (getBoolValue(params) ? " === " : " --- ");
+    } else if (opcode == "AFI") {
+        currentBranchState = false;
+        std::cout << "AFI" << (currentBranchState ? " === " : " --- ");
     } else if (opcode == "ADD") {
         std::istringstream paramStream(params);
         std::string var1, var2, var3;

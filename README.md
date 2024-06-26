@@ -164,12 +164,12 @@ The same can be achieved with OTL's and OTUs
 - `BND` (Branch End)
 - `TON`
 - `TOF`
-
-## Planned Instructions
-
 - `ONR` One Shot Rising
 - `ONF` One Shot Falling
 - `AFI` Always False Instruction
+
+## Planned Instructions
+
 - `TOG` Toggle
 - `CTU`
 - `CTD`

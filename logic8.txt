@@ -5,4 +5,4 @@ tof_tt bool 0
 onr bool 0
 
 001 ONR(onr) TOF(tof_dn,tof_tt,tof_pre,tof_acc)
-002 XIC(tof_dn)
+002 XIC(tof_dn) AFI

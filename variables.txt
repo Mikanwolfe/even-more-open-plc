@@ -1,5 +1,5 @@
 onr bool 1
-tof_acc int 226
-tof_dn bool 1
+tof_acc int 1000
+tof_dn bool 0
 tof_pre int 1000
-tof_tt bool 1
+tof_tt bool 0
