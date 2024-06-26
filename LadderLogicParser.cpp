@@ -331,11 +331,11 @@ void LadderLogicParser::handleAddInstruction(const std::string& var1, const std:
         if (std::holds_alternative<int>(variableMap[var1]) && std::holds_alternative<int>(variableMap[var2])) {
             int result = std::get<int>(variableMap[var1]) + std::get<int>(variableMap[var2]);
             variableMap[var3] = result;
-            std::cout << "ADD(" << var1 << "," << var2 << "," << var3 << ") = " << result << std::endl;
+            std::cout << "ADD(" << var1 << " + " << var2 << " = " << result << ")" << " === ";
         } else if (std::holds_alternative<double>(variableMap[var1]) && std::holds_alternative<double>(variableMap[var2])) {
             double result = std::get<double>(variableMap[var1]) + std::get<double>(variableMap[var2]);
             variableMap[var3] = result;
-            std::cout << "ADD(" << var1 << "," << var2 << "," << var3 << ") = " << result << std::endl;
+            std::cout << "ADD(" << var1 << " + " << var2 << " = " << result << ")" << " === ";
         } else {
             std::cerr << "ADD instruction type mismatch: " << var1 << ", " << var2 << std::endl;
         }
@@ -349,11 +349,11 @@ void LadderLogicParser::handleSubInstruction(const std::string& var1, const std:
         if (std::holds_alternative<int>(variableMap[var1]) && std::holds_alternative<int>(variableMap[var2])) {
             int result = std::get<int>(variableMap[var1]) - std::get<int>(variableMap[var2]);
             variableMap[var3] = result;
-            std::cout << "SUB(" << var1 << "," << var2 << "," << var3 << ") = " << result << std::endl;
+            std::cout << "SUB(" << var1 << " - " << var2 << " = " << result << ")" << " === ";
         } else if (std::holds_alternative<double>(variableMap[var1]) && std::holds_alternative<double>(variableMap[var2])) {
             double result = std::get<double>(variableMap[var1]) - std::get<double>(variableMap[var2]);
             variableMap[var3] = result;
-            std::cout << "SUB(" << var1 << "," << var2 << "," << var3 << ") = " << result << std::endl;
+            std::cout << "SUB(" << var1 << " - " << var2 << " = " << result << ")" << " === ";
         } else {
             std::cerr << "SUB instruction type mismatch: " << var1 << ", " << var2 << std::endl;
         }
@@ -369,12 +369,12 @@ bool LadderLogicParser::handleLssInstruction(const std::string& var1, const std:
             int val1 = std::get<int>(variableMap[var1]);
             int val2 = std::get<int>(variableMap[var2]);
             result = val1 < val2;
-            std::cout << "LSS(" << var1 << "," << var2 << ") = LSS(" << val1 << "," << val2 << ") = " << boolToString(result) << std::endl;
+            std::cout << "LSS(" << val1 << " < " << val2 << ")" << (result ? " === " : " --- ");
         } else if (std::holds_alternative<double>(variableMap[var1]) && std::holds_alternative<double>(variableMap[var2])) {
             double val1 = std::get<double>(variableMap[var1]);
             double val2 = std::get<double>(variableMap[var2]);
             result = val1 < val2;
-            std::cout << "LSS(" << var1 << "," << var2 << ") = LSS(" << val1 << "," << val2 << ") = " << boolToString(result) << std::endl;
+            std::cout << "LSS(" << val1 << " < " << val2 << ")" << (result ? " === " : " --- ");
         } else {
             std::cerr << "LSS instruction type mismatch: " << var1 << ", " << var2 << std::endl;
             return false;
@@ -393,12 +393,12 @@ bool LadderLogicParser::handleGtrInstruction(const std::string& var1, const std:
             int val1 = std::get<int>(variableMap[var1]);
             int val2 = std::get<int>(variableMap[var2]);
             result = val1 > val2;
-            std::cout << "GTR(" << var1 << "," << var2 << ") = GTR(" << val1 << "," << val2 << ") = " << boolToString(result) << std::endl;
+            std::cout << "GTR(" << val1 << " > " << val2 << ")" << (result ? " === " : " --- ");
         } else if (std::holds_alternative<double>(variableMap[var1]) && std::holds_alternative<double>(variableMap[var2])) {
             double val1 = std::get<double>(variableMap[var1]);
             double val2 = std::get<double>(variableMap[var2]);
             result = val1 > val2;
-            std::cout << "GTR(" << var1 << "," << var2 << ") = GTR(" << val1 << "," << val2 << ") = " << boolToString(result) << std::endl;
+            std::cout << "GTR(" << val1 << " > " << val2 << ")" << (result ? " === " : " --- ");
         } else {
             std::cerr << "GTR instruction type mismatch: " << var1 << ", " << var2 << std::endl;
             return false;
