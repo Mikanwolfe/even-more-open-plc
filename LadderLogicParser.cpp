@@ -92,59 +92,39 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
 }
 void LadderLogicParser::handleInstruction(const std::string& opcode, const std::string& params, bool& currentBranchState) {
     if (opcode == "XIC") {
-        handleXicInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleXicInstruction(params, currentBranchState);
     } else if (opcode == "XIO") {
-        handleXioInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleXioInstruction(params, currentBranchState);
     } else if (opcode == "OTE") {
-        handleOteInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleOteInstruction(params, currentBranchState);
     } else if (opcode == "OTL") {
-        handleOtlInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleOtlInstruction(params, currentBranchState);
     } else if (opcode == "AFI") {
-        handleAfiInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleAfiInstruction(params, currentBranchState);
     } else if (opcode == "ADD") {
-        handleAddInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleAddInstruction(params, currentBranchState);
     } else if (opcode == "SUB") {
-        handleSubInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleSubInstruction(params, currentBranchState);
     } else if (opcode == "LSS") {
-        std::istringstream paramStream(params);
-        std::string var1, var2;
-        std::getline(paramStream, var1, ',');
-        std::getline(paramStream, var2, ',');
-
-        if (var1.empty() || var2.empty()) {
-            std::cerr << "LSS instruction has incomplete parameters." << std::endl;
-            return;
-        }
-        currentBranchState = currentBranchState && handleLssInstruction(var1, var2);
-        std::cout << "LSS[" << params << "]" << (currentBranchState ? " === " : " --- ");
+        currentBranchState = currentBranchState && handleLssInstruction(params, currentBranchState);
     } else if (opcode == "GTR") {
-        std::istringstream paramStream(params);
-        std::string var1, var2;
-        std::getline(paramStream, var1, ',');
-        std::getline(paramStream, var2, ',');
-
-        if (var1.empty() || var2.empty()) {
-            std::cerr << "GTR instruction has incomplete parameters." << std::endl;
-            return;
-        }
-        currentBranchState = currentBranchState && handleGtrInstruction(var1, var2);
-        std::cout << "GTR[" << params << "]" << (currentBranchState ? " === " : " --- ");
+        currentBranchState = currentBranchState && handleGtrInstruction(params, currentBranchState);
     } else if (opcode == "EQU") {
-        handleEquInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleEquInstruction(params, currentBranchState);
     } else if (opcode == "NEQ") {
-        handleNeqInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleNeqInstruction(params, currentBranchState);
     } else if (opcode == "CTU") {
-        handleCtuInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleCtuInstruction(params, currentBranchState);
     } else if (opcode == "CTD") {
-        handleCtdInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleCtdInstruction(params, currentBranchState);
     } else if (opcode == "TON") {
-        handleTonInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleTonInstruction(params, currentBranchState);
     } else if (opcode == "TOF") {
-        handleTofInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleTofInstruction(params, currentBranchState);
     } else if (opcode == "ONR") {
-        currentBranchState = handleOnrInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleOnrInstruction(params, currentBranchState);
     } else if (opcode == "ONF") {
-        currentBranchState = handleOnfInstruction(params, currentBranchState);
+        currentBranchState = currentBranchState && handleOnfInstruction(params, currentBranchState);
     } else {
         std::cerr << "Unknown instruction: " << opcode << std::endl;
     }
@@ -396,7 +376,7 @@ void LadderLogicParser::handleBranchEnd(std::stack<bool>& branchStack, std::stac
     std::cout << ">>" << std::endl;
 }
 
-void LadderLogicParser::handleTonInstruction(const std::string& params, bool currentBranchState) {
+bool LadderLogicParser::handleTonInstruction(const std::string& params, bool currentBranchState) {
     std::istringstream paramStream(params);
     std::string dn, tt, pre, acc;
     std::getline(paramStream, dn, ',');
@@ -406,7 +386,7 @@ void LadderLogicParser::handleTonInstruction(const std::string& params, bool cur
 
     if (dn.empty() || tt.empty() || pre.empty() || acc.empty()) {
         std::cerr << "TON instruction has incomplete parameters." << std::endl;
-        return;
+        return currentBranchState;
     }
 
     int preValue = std::get<int>(variableMap[pre]);
@@ -430,9 +410,10 @@ void LadderLogicParser::handleTonInstruction(const std::string& params, bool cur
 
     variableMap[acc] = accValue;
     std::cout << "TON(" << accValue << "/" << preValue << ")" << (currentBranchState ? " === " : " --- ");
+    return currentBranchState;
 }
 
-void LadderLogicParser::handleTofInstruction(const std::string& params, bool currentBranchState) {
+bool LadderLogicParser::handleTofInstruction(const std::string& params, bool currentBranchState) {
     std::istringstream paramStream(params);
     std::string dn, tt, pre, acc;
     std::getline(paramStream, dn, ',');
@@ -442,7 +423,7 @@ void LadderLogicParser::handleTofInstruction(const std::string& params, bool cur
 
     if (dn.empty() || tt.empty() || pre.empty() || acc.empty()) {
         std::cerr << "TOF instruction has incomplete parameters." << std::endl;
-        return;
+        return currentBranchState;
     }
 
     int preValue = std::get<int>(variableMap[pre]);
@@ -466,6 +447,7 @@ void LadderLogicParser::handleTofInstruction(const std::string& params, bool cur
 
     variableMap[acc] = accValue;
     std::cout << "TOF(" << accValue << "/" << preValue << ")" << (currentBranchState ? " === " : " --- ");
+    return currentBranchState;
 }
 
 bool LadderLogicParser::handleAddInstruction(const std::string& params, bool& currentBranchState) {
@@ -540,19 +522,30 @@ bool LadderLogicParser::handleSubInstruction(const std::string& params, bool& cu
     return currentBranchState;
 }
 
-bool LadderLogicParser::handleLssInstruction(const std::string& var1, const std::string& var2) {
+bool LadderLogicParser::handleLssInstruction(const std::string& params, bool& currentBranchState) {
+
+    std::istringstream paramStream(params);
+    std::string var1, var2;
+    std::getline(paramStream, var1, ',');
+    std::getline(paramStream, var2, ',');
+
+    if (var1.empty() || var2.empty()) {
+        std::cerr << "LSS instruction has incomplete parameters." << std::endl;
+        return currentBranchState;
+    }
+
     if (variableMap.find(var1) != variableMap.end() && variableMap.find(var2) != variableMap.end()) {
         bool result;
         if (std::holds_alternative<int>(variableMap[var1]) && std::holds_alternative<int>(variableMap[var2])) {
             int val1 = std::get<int>(variableMap[var1]);
             int val2 = std::get<int>(variableMap[var2]);
             result = val1 < val2;
-            std::cout << "LSS(" << val1 << " < " << val2 << ")" << (result ? " === " : " --- ");
+            std::cout << "LSS[" << params << "]" << (currentBranchState ? " === " : " --- ");
         } else if (std::holds_alternative<double>(variableMap[var1]) && std::holds_alternative<double>(variableMap[var2])) {
             double val1 = std::get<double>(variableMap[var1]);
             double val2 = std::get<double>(variableMap[var2]);
             result = val1 < val2;
-            std::cout << "LSS(" << val1 << " < " << val2 << ")" << (result ? " === " : " --- ");
+            std::cout << "LSS[" << params << "]" << (currentBranchState ? " === " : " --- ");
         } else {
             std::cerr << "LSS instruction type mismatch: " << var1 << ", " << var2 << std::endl;
             return false;
@@ -564,19 +557,30 @@ bool LadderLogicParser::handleLssInstruction(const std::string& var1, const std:
     }
 }
 
-bool LadderLogicParser::handleGtrInstruction(const std::string& var1, const std::string& var2) {
+bool LadderLogicParser::handleGtrInstruction(const std::string& params, bool& currentBranchState) {
+
+    std::istringstream paramStream(params);
+    std::string var1, var2;
+    std::getline(paramStream, var1, ',');
+    std::getline(paramStream, var2, ',');
+
+    if (var1.empty() || var2.empty()) {
+        std::cerr << "GTR instruction has incomplete parameters." << std::endl;
+        return currentBranchState;
+    }
+
     if (variableMap.find(var1) != variableMap.end() && variableMap.find(var2) != variableMap.end()) {
         bool result;
         if (std::holds_alternative<int>(variableMap[var1]) && std::holds_alternative<int>(variableMap[var2])) {
             int val1 = std::get<int>(variableMap[var1]);
             int val2 = std::get<int>(variableMap[var2]);
             result = val1 > val2;
-            std::cout << "GTR(" << val1 << " > " << val2 << ")" << (result ? " === " : " --- ");
+            std::cout << "GTR[" << params << "]" << (currentBranchState ? " === " : " --- ");
         } else if (std::holds_alternative<double>(variableMap[var1]) && std::holds_alternative<double>(variableMap[var2])) {
             double val1 = std::get<double>(variableMap[var1]);
             double val2 = std::get<double>(variableMap[var2]);
             result = val1 > val2;
-            std::cout << "GTR(" << val1 << " > " << val2 << ")" << (result ? " === " : " --- ");
+            std::cout << "GTR[" << params << "]" << (currentBranchState ? " === " : " --- ");
         } else {
             std::cerr << "GTR instruction type mismatch: " << var1 << ", " << var2 << std::endl;
             return false;

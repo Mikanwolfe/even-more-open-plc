@@ -31,15 +31,15 @@ private:
     void handleBranchStart(std::stack<bool>& branchStack, std::stack<bool>& currentBranchStateStack, bool& branchResult, bool& currentBranchState);
     void handleNextBranch(bool& branchResult, bool& currentBranchState);
     void handleBranchEnd(std::stack<bool>& branchStack, std::stack<bool>& currentBranchStateStack, bool& branchResult, bool& currentBranchState);
-    void handleTonInstruction(const std::string& params, bool currentBranchState);
-    void handleTofInstruction(const std::string& params, bool currentBranchState);
+    bool handleTonInstruction(const std::string& params, bool currentBranchState);
+    bool handleTofInstruction(const std::string& params, bool currentBranchState);
     bool getBoolValue(const std::string& varName);
     void setBoolValue(const std::string& varName, bool value);
 
     bool handleAddInstruction(const std::string& params, bool& currentBranchState);
     bool handleSubInstruction(const std::string& params, bool& currentBranchState);
-    bool handleLssInstruction(const std::string& var1, const std::string& var2);
-    bool handleGtrInstruction(const std::string& var1, const std::string& var2);
+    bool handleLssInstruction(const std::string& params, bool& currentBranchState);
+    bool handleGtrInstruction(const std::string& params, bool& currentBranchState);
     bool handleAfiInstruction(const std::string& params, bool& currentBranchState);
     bool handleEquInstruction(const std::string& params, bool& currentBranchState);
     bool handleNeqInstruction(const std::string& params, bool& currentBranchState);
