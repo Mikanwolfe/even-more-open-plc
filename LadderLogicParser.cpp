@@ -100,8 +100,7 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
     } else if (opcode == "OTL") {
         handleOtlInstruction(params, currentBranchState);
     } else if (opcode == "AFI") {
-        currentBranchState = false;
-        std::cout << "AFI" << (currentBranchState ? " === " : " --- ");
+        handleAfiInstruction(params, currentBranchState);
     } else if (opcode == "ADD") {
         std::istringstream paramStream(params);
         std::string var1, var2, var3;
@@ -183,44 +182,48 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
 }
 
 
-void LadderLogicParser::handleXicInstruction(const std::string& params, bool& currentBranchState) {
+bool LadderLogicParser::handleXicInstruction(const std::string& params, bool& currentBranchState) {
     if (params.empty()) {
         std::cerr << "XIC instruction missing parameters." << std::endl;
-        return;
+        return currentBranchState;
     }
     bool value = getBoolValue(params);
     currentBranchState = currentBranchState && value;
     std::cout << "XIC[" << params << "]" << (currentBranchState ? " === " : " --- ");
+    return currentBranchState;
 }
 
-void LadderLogicParser::handleXioInstruction(const std::string& params, bool& currentBranchState) {
+bool LadderLogicParser::handleXioInstruction(const std::string& params, bool& currentBranchState) {
     if (params.empty()) {
         std::cerr << "XIO instruction missing parameters." << std::endl;
-        return;
+        return currentBranchState;
     }
     bool value = !getBoolValue(params);
     currentBranchState = currentBranchState && value;
     std::cout << "XIO[" << params << "]" << (currentBranchState ? " === " : " --- ");
+    return currentBranchState;
 }
 
-void LadderLogicParser::handleOteInstruction(const std::string& params, bool& currentBranchState) {
+bool LadderLogicParser::handleOteInstruction(const std::string& params, bool& currentBranchState) {
     if (params.empty()) {
         std::cerr << "OTE instruction missing parameters." << std::endl;
-        return;
+        return currentBranchState;
     }
     setBoolValue(params, currentBranchState);
     std::cout << "OTE[" << params << "]" << (currentBranchState ? " === " : " --- ");
+    return currentBranchState;
 }
 
-void LadderLogicParser::handleOtlInstruction(const std::string& params, bool& currentBranchState) {
+bool LadderLogicParser::handleOtlInstruction(const std::string& params, bool& currentBranchState) {
     if (params.empty()) {
         std::cerr << "OTL instruction missing parameters." << std::endl;
-        return;
+        return currentBranchState;
     }
     if (currentBranchState) {
         setBoolValue(params, true);
     }
     std::cout << "OTL[" << params << "]" << (getBoolValue(params) ? " === " : " --- ");
+    return currentBranchState;
 }
 
 bool LadderLogicParser::handleEquInstruction(const std::string& params, bool& currentBranchState) {
@@ -255,6 +258,12 @@ bool LadderLogicParser::handleEquInstruction(const std::string& params, bool& cu
         std::cerr << "EQU instruction variables not found: " << var1 << ", " << var2 << std::endl;
         return false;
     }
+}
+
+bool LadderLogicParser::handleAfiInstruction(const std::string& params, bool& currentBranchState) {
+    currentBranchState = false;
+    std::cout << "AFI" << (currentBranchState ? " === " : " --- ");
+    return false;
 }
 
 
@@ -292,7 +301,7 @@ bool LadderLogicParser::handleNeqInstruction(const std::string& params, bool& cu
     }
 }
 
-void LadderLogicParser::handleCtuInstruction(const std::string& params, bool& currentBranchState) {
+bool LadderLogicParser::handleCtuInstruction(const std::string& params, bool& currentBranchState) {
     std::istringstream paramStream(params);
     std::string pre, acc, ct, dn;
     std::getline(paramStream, pre, ',');
@@ -302,7 +311,7 @@ void LadderLogicParser::handleCtuInstruction(const std::string& params, bool& cu
 
     if (pre.empty() || acc.empty() || ct.empty() || dn.empty()) {
         std::cerr << "CTU instruction has incomplete parameters." << std::endl;
-        return;
+        return currentBranchState;
     }
 
     int preValue = std::get<int>(variableMap[pre]);
@@ -326,9 +335,10 @@ void LadderLogicParser::handleCtuInstruction(const std::string& params, bool& cu
 
     variableMap[acc] = accValue;
     std::cout << "ACC: " << accValue << ", DN: " << boolToString(getBoolValue(dn)) << std::endl;
+    return currentBranchState;
 }
 
-void LadderLogicParser::handleCtdInstruction(const std::string& params, bool& currentBranchState) {
+bool LadderLogicParser::handleCtdInstruction(const std::string& params, bool& currentBranchState) {
     std::istringstream paramStream(params);
     std::string pre, acc, ct, dn;
     std::getline(paramStream, pre, ',');
@@ -338,7 +348,7 @@ void LadderLogicParser::handleCtdInstruction(const std::string& params, bool& cu
 
     if (pre.empty() || acc.empty() || ct.empty() || dn.empty()) {
         std::cerr << "CTD instruction has incomplete parameters." << std::endl;
-        return;
+        return currentBranchState;
     }
 
     int accValue = std::get<int>(variableMap[acc]);
@@ -361,6 +371,7 @@ void LadderLogicParser::handleCtdInstruction(const std::string& params, bool& cu
 
     variableMap[acc] = accValue;
     std::cout << "ACC: " << accValue << ", DN: " << boolToString(getBoolValue(dn)) << std::endl;
+    return currentBranchState;
 }
 
 bool LadderLogicParser::handleOnrInstruction(const std::string& var1, bool& currentBranchState) {
