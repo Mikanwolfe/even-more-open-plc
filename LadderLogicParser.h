@@ -36,8 +36,8 @@ private:
     bool getBoolValue(const std::string& varName);
     void setBoolValue(const std::string& varName, bool value);
 
-    void handleAddInstruction(const std::string& var1, const std::string& var2, const std::string& var3);
-    void handleSubInstruction(const std::string& var1, const std::string& var2, const std::string& var3);
+    bool handleAddInstruction(const std::string& params, bool& currentBranchState);
+    bool handleSubInstruction(const std::string& params, bool& currentBranchState);
     bool handleLssInstruction(const std::string& var1, const std::string& var2);
     bool handleGtrInstruction(const std::string& var1, const std::string& var2);
     bool handleAfiInstruction(const std::string& params, bool& currentBranchState);

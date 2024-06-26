@@ -102,40 +102,9 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
     } else if (opcode == "AFI") {
         handleAfiInstruction(params, currentBranchState);
     } else if (opcode == "ADD") {
-        std::istringstream paramStream(params);
-        std::string var1, var2, var3;
-        std::getline(paramStream, var1, ',');
-        std::getline(paramStream, var2, ',');
-        std::getline(paramStream, var3, ',');
-
-        if (var1.empty() || var2.empty() || var3.empty()) {
-            std::cerr << "ADD instruction has incomplete parameters." << std::endl;
-            return;
-        }
-
-        if (!currentBranchState) {
-            std::cout << "ADD[" << params << "] --- ";
-            return; // Do not run this instruction if line state is LOW
-        }
-        handleAddInstruction(var1, var2, var3);
+        handleAddInstruction(params, currentBranchState);
     } else if (opcode == "SUB") {
-        std::istringstream paramStream(params);
-        std::string var1, var2, var3;
-        std::getline(paramStream, var1, ',');
-        std::getline(paramStream, var2, ',');
-        std::getline(paramStream, var3, ',');
-
-        if (var1.empty() || var2.empty() || var3.empty()) {
-            std::cerr << "SUB instruction has incomplete parameters." << std::endl;
-            return;
-        }
-
-        if (!currentBranchState) {
-            std::cout << "SUB[" << params << "] --- ";
-            return; // Do not run this instruction if line state is LOW
-        }
-
-        handleSubInstruction(var1, var2, var3);
+        handleSubInstruction(params, currentBranchState);
     } else if (opcode == "LSS") {
         std::istringstream paramStream(params);
         std::string var1, var2;
@@ -499,7 +468,24 @@ void LadderLogicParser::handleTofInstruction(const std::string& params, bool cur
     std::cout << "TOF(" << accValue << "/" << preValue << ")" << (currentBranchState ? " === " : " --- ");
 }
 
-void LadderLogicParser::handleAddInstruction(const std::string& var1, const std::string& var2, const std::string& var3) {
+bool LadderLogicParser::handleAddInstruction(const std::string& params, bool& currentBranchState) {
+    std::istringstream paramStream(params);
+    std::string var1, var2, var3;
+    std::getline(paramStream, var1, ',');
+    std::getline(paramStream, var2, ',');
+    std::getline(paramStream, var3, ',');
+
+    if (var1.empty() || var2.empty() || var3.empty()) {
+        std::cerr << "ADD instruction has incomplete parameters." << std::endl;
+        return currentBranchState;
+    }
+
+    if (!currentBranchState) {
+        std::cout << "ADD(" << var1 << " + " << var2 << ")" << " --- ";
+        return currentBranchState;
+    }
+
+
     if (variableMap.find(var1) != variableMap.end() && variableMap.find(var2) != variableMap.end()) {
         if (std::holds_alternative<int>(variableMap[var1]) && std::holds_alternative<int>(variableMap[var2])) {
             int result = std::get<int>(variableMap[var1]) + std::get<int>(variableMap[var2]);
@@ -515,9 +501,27 @@ void LadderLogicParser::handleAddInstruction(const std::string& var1, const std:
     } else {
         std::cerr << "ADD instruction variables not found: " << var1 << ", " << var2 << std::endl;
     }
+    return currentBranchState;
 }
 
-void LadderLogicParser::handleSubInstruction(const std::string& var1, const std::string& var2, const std::string& var3) {
+bool LadderLogicParser::handleSubInstruction(const std::string& params, bool& currentBranchState) {
+
+        std::istringstream paramStream(params);
+        std::string var1, var2, var3;
+        std::getline(paramStream, var1, ',');
+        std::getline(paramStream, var2, ',');
+        std::getline(paramStream, var3, ',');
+
+        if (var1.empty() || var2.empty() || var3.empty()) {
+            std::cerr << "SUB instruction has incomplete parameters." << std::endl;
+            return currentBranchState;
+        }
+
+        if (!currentBranchState) {
+            std::cout << "SUB(" << var1 << " - " << var2 << ")" << " --- ";
+            return currentBranchState;
+        }
+
     if (variableMap.find(var1) != variableMap.end() && variableMap.find(var2) != variableMap.end()) {
         if (std::holds_alternative<int>(variableMap[var1]) && std::holds_alternative<int>(variableMap[var2])) {
             int result = std::get<int>(variableMap[var1]) - std::get<int>(variableMap[var2]);
@@ -533,6 +537,7 @@ void LadderLogicParser::handleSubInstruction(const std::string& var1, const std:
     } else {
         std::cerr << "SUB instruction variables not found: " << var1 << ", " << var2 << std::endl;
     }
+    return currentBranchState;
 }
 
 bool LadderLogicParser::handleLssInstruction(const std::string& var1, const std::string& var2) {
