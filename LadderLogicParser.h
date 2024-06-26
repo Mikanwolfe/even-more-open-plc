@@ -31,11 +31,11 @@ private:
     void handleBranchStart(std::stack<bool>& branchStack, std::stack<bool>& currentBranchStateStack, bool& branchResult, bool& currentBranchState);
     void handleNextBranch(bool& branchResult, bool& currentBranchState);
     void handleBranchEnd(std::stack<bool>& branchStack, std::stack<bool>& currentBranchStateStack, bool& branchResult, bool& currentBranchState);
-    bool handleTonInstruction(const std::string& params, bool currentBranchState);
-    bool handleTofInstruction(const std::string& params, bool currentBranchState);
     bool getBoolValue(const std::string& varName);
     void setBoolValue(const std::string& varName, bool value);
 
+    bool handleTonInstruction(const std::string& params, bool& currentBranchState);
+    bool handleTofInstruction(const std::string& params, bool& currentBranchState);
     bool handleAddInstruction(const std::string& params, bool& currentBranchState);
     bool handleSubInstruction(const std::string& params, bool& currentBranchState);
     bool handleLssInstruction(const std::string& params, bool& currentBranchState);

@@ -376,7 +376,7 @@ void LadderLogicParser::handleBranchEnd(std::stack<bool>& branchStack, std::stac
     std::cout << ">>" << std::endl;
 }
 
-bool LadderLogicParser::handleTonInstruction(const std::string& params, bool currentBranchState) {
+bool LadderLogicParser::handleTonInstruction(const std::string& params, bool& currentBranchState) {
     std::istringstream paramStream(params);
     std::string dn, tt, pre, acc;
     std::getline(paramStream, dn, ',');
@@ -413,7 +413,7 @@ bool LadderLogicParser::handleTonInstruction(const std::string& params, bool cur
     return currentBranchState;
 }
 
-bool LadderLogicParser::handleTofInstruction(const std::string& params, bool currentBranchState) {
+bool LadderLogicParser::handleTofInstruction(const std::string& params, bool& currentBranchState) {
     std::istringstream paramStream(params);
     std::string dn, tt, pre, acc;
     std::getline(paramStream, dn, ',');
