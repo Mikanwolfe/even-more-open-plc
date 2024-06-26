@@ -1,5 +1,5 @@
 
-Timer on and Timer Off Example
+Repeating Timer Example
 
 en_timer bool 1
 ton_dn bool 0

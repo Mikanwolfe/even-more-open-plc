@@ -54,6 +54,10 @@ Key points:
 - Operations can only be performed on variables of the same type.
 - Nested branches are supported.
 
+Instructions are written simialrly to function calls. For example, `ADD(x,y,z)` is equivalent to x + y = z. Ensure that there are no spaces in-between parameters.
+- `ADD(x,y,z)` ✅
+- `ADD(x, y, z)` ❌
+
 ### Example: Branch Testing
 
 ```
@@ -100,13 +104,15 @@ The same can be achieved with OTL's and OTUs
 - `BST` (Branch Start)
 - `NXB` (Next Branch)
 - `BND` (Branch End)
+- `TON`
+- `TOF`
 
 ## Planned Instructions
 
-- `PTS` (custom positive transition, ONS)
-- `NTS` (custom negative transition)
-- `TON`
-- `TOF`
+- `ONR` One Shot Rising
+- `ONF` One Shot Fallin
+- `AFI` Always False Instruction
+- `TOG` Toggle
 - `CTU`
 - `CTD`
 - `EQU`
@@ -116,7 +122,7 @@ The same can be achieved with OTL's and OTUs
 - `MUL`
 - `PID` (yes, PID!)
 
-Note: There will be no AND, OR blocks.
+Note: There will be no AND, OR blocks, as they should be implemented as rungs.
 
 ## Future Development
 
@@ -126,6 +132,8 @@ Note: There will be no AND, OR blocks.
 - Program structuring
 - Validation
 - Visualisation
+- Function parameters and output to use rungs as AOIs
+- Run Mode, Pause Mode
 
 ## Philosophy and General Rules
 
