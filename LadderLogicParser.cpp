@@ -6,9 +6,19 @@
 #include <thread>
 #include <chrono>
 #include <cmath>
+#include <functional>
 
-LadderLogicParser::LadderLogicParser(const std::vector<std::string>& logic, std::map<std::string, Variable>& variableMap)
-    : logic(logic), variableMap(variableMap), lineState(true), endFound(false) {}
+LadderLogicParser::LadderLogicParser(
+    const std::vector<std::string>& logic,
+    std::map<std::string, Variable>& variableMap
+    ) :
+    logic(logic),
+    variableMap(variableMap),
+    lineState(true),
+    endFound(false) 
+    {
+    initializeInstructionHandlers();
+}
 
 std::string boolToString(bool value) {
     return value ? "true" : "false";
@@ -90,46 +100,39 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
         ++i;
     }
 }
+
+void LadderLogicParser::initializeInstructionHandlers() {
+    instructionHandlers["XIC"] = std::bind(&LadderLogicParser::handleXicInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["XIO"] = std::bind(&LadderLogicParser::handleXioInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["OTE"] = std::bind(&LadderLogicParser::handleOteInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["OTL"] = std::bind(&LadderLogicParser::handleOtlInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["AFI"] = std::bind(&LadderLogicParser::handleAfiInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["ADD"] = std::bind(&LadderLogicParser::handleAddInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["SUB"] = std::bind(&LadderLogicParser::handleSubInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["LSS"] = std::bind(&LadderLogicParser::handleLssInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["GTR"] = std::bind(&LadderLogicParser::handleGtrInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["EQU"] = std::bind(&LadderLogicParser::handleEquInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["NEQ"] = std::bind(&LadderLogicParser::handleNeqInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["CTU"] = std::bind(&LadderLogicParser::handleCtuInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["CTD"] = std::bind(&LadderLogicParser::handleCtdInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["TON"] = std::bind(&LadderLogicParser::handleTonInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["TOF"] = std::bind(&LadderLogicParser::handleTofInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["ONR"] = std::bind(&LadderLogicParser::handleOnrInstruction, this, std::placeholders::_1, std::placeholders::_2);
+    instructionHandlers["ONF"] = std::bind(&LadderLogicParser::handleOnfInstruction, this, std::placeholders::_1, std::placeholders::_2);
+}
+
 void LadderLogicParser::handleInstruction(const std::string& opcode, const std::string& params, bool& currentBranchState) {
-    if (opcode == "XIC") {
-        currentBranchState = currentBranchState && handleXicInstruction(params, currentBranchState);
-    } else if (opcode == "XIO") {
-        currentBranchState = currentBranchState && handleXioInstruction(params, currentBranchState);
-    } else if (opcode == "OTE") {
-        currentBranchState = currentBranchState && handleOteInstruction(params, currentBranchState);
-    } else if (opcode == "OTL") {
-        currentBranchState = currentBranchState && handleOtlInstruction(params, currentBranchState);
-    } else if (opcode == "AFI") {
-        currentBranchState = currentBranchState && handleAfiInstruction(params, currentBranchState);
-    } else if (opcode == "ADD") {
-        currentBranchState = currentBranchState && handleAddInstruction(params, currentBranchState);
-    } else if (opcode == "SUB") {
-        currentBranchState = currentBranchState && handleSubInstruction(params, currentBranchState);
-    } else if (opcode == "LSS") {
-        currentBranchState = currentBranchState && handleLssInstruction(params, currentBranchState);
-    } else if (opcode == "GTR") {
-        currentBranchState = currentBranchState && handleGtrInstruction(params, currentBranchState);
-    } else if (opcode == "EQU") {
-        currentBranchState = currentBranchState && handleEquInstruction(params, currentBranchState);
-    } else if (opcode == "NEQ") {
-        currentBranchState = currentBranchState && handleNeqInstruction(params, currentBranchState);
-    } else if (opcode == "CTU") {
-        currentBranchState = currentBranchState && handleCtuInstruction(params, currentBranchState);
-    } else if (opcode == "CTD") {
-        currentBranchState = currentBranchState && handleCtdInstruction(params, currentBranchState);
-    } else if (opcode == "TON") {
-        currentBranchState = currentBranchState && handleTonInstruction(params, currentBranchState);
-    } else if (opcode == "TOF") {
-        currentBranchState = currentBranchState && handleTofInstruction(params, currentBranchState);
-    } else if (opcode == "ONR") {
-        currentBranchState = currentBranchState && handleOnrInstruction(params, currentBranchState);
-    } else if (opcode == "ONF") {
-        currentBranchState = currentBranchState && handleOnfInstruction(params, currentBranchState);
+    auto it = instructionHandlers.find(opcode);
+    if (it != instructionHandlers.end()) {
+        try {
+            currentBranchState = currentBranchState && it->second(params, currentBranchState);
+        } catch (const std::exception& e) {
+            std::cerr << "Error executing instruction '" << opcode << "': " << e.what() << std::endl;
+        }
     } else {
         std::cerr << "Unknown instruction: " << opcode << std::endl;
     }
 }
-
 
 bool LadderLogicParser::handleXicInstruction(const std::string& params, bool& currentBranchState) {
     if (params.empty()) {

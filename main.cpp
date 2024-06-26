@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
             std::cout << "-------" << "-------" << std::endl;
 
             // Save variables
-            saveVariables("variables.txt", variableMap);
+            // saveVariables("variables.txt", variableMap); //Standly with the new mapping routine this core dumps
 
             // Delay for 10ms
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
         std::cout << "-------" << "-------" << std::endl;
 
         // Save variables
-        saveVariables("variables.txt", variableMap);
+        // saveVariables("variables.txt", variableMap);
     }
 
     return 0;

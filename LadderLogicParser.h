@@ -4,6 +4,8 @@
 #include <vector>
 #include <stack>
 #include <chrono>
+#include <unordered_map>
+#include <functional>
 
 using Variable = std::variant<int, bool, double>;
 
@@ -18,12 +20,16 @@ public:
 
 
 private:
+    std::unordered_map<std::string, std::function<bool(const std::string&, bool&)>> instructionHandlers;
+    
     std::vector<std::string> logic;
     std::map<std::string, Variable>& variableMap;
     bool lineState;
     bool endFound;
 
     std::chrono::high_resolution_clock::time_point initialTime;
+
+    void initializeInstructionHandlers();
     double roundToTwoDecimals(double value);
 
     void handleTokens(const std::vector<std::string>& tokens);
