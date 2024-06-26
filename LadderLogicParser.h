@@ -42,4 +42,6 @@ private:
     bool handleGtrInstruction(const std::string& var1, const std::string& var2);
     bool handleOnrInstruction(const std::string& var1, bool& currentBranchState);
     bool handleOnfInstruction(const std::string& var1, bool& currentBranchState);
+    void handleCtuInstruction(const std::string& params, bool& currentBranchState);
+    void handleCtdInstruction(const std::string& params, bool& currentBranchState);
 };

@@ -189,6 +189,10 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         }
         currentBranchState = currentBranchState && handleGtrInstruction(var1, var2);
         std::cout << "GTR[" << params << "]" << (currentBranchState ? " === " : " --- ");
+    } else if (opcode == "CTU") {
+        handleCtuInstruction(params, currentBranchState);
+    } else if (opcode == "CTD") {
+        handleCtdInstruction(params, currentBranchState);
     } else if (opcode == "TON") {
         handleTonInstruction(params, currentBranchState);
     } else if (opcode == "TOF") {
@@ -204,6 +208,76 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
     }
 }
 
+void LadderLogicParser::handleCtuInstruction(const std::string& params, bool& currentBranchState) {
+    std::istringstream paramStream(params);
+    std::string pre, acc, ct, dn;
+    std::getline(paramStream, pre, ',');
+    std::getline(paramStream, acc, ',');
+    std::getline(paramStream, ct, ',');
+    std::getline(paramStream, dn, ',');
+
+    if (pre.empty() || acc.empty() || ct.empty() || dn.empty()) {
+        std::cerr << "CTU instruction has incomplete parameters." << std::endl;
+        return;
+    }
+
+    int preValue = std::get<int>(variableMap[pre]);
+    int accValue = std::get<int>(variableMap[acc]);
+    bool ctValue = getBoolValue(ct);
+
+    if (currentBranchState && !ctValue) {
+        accValue++;
+        setBoolValue(ct, true);
+        std::cout << "CTU[" << params << "] === ";
+    } else if (!currentBranchState) {
+        setBoolValue(ct, false);
+        std::cout << "CTU[" << params << "] --- ";
+    }
+
+    if (accValue >= preValue) {
+        setBoolValue(dn, true);
+    } else {
+        setBoolValue(dn, false);
+    }
+
+    variableMap[acc] = accValue;
+    std::cout << "ACC: " << accValue << ", DN: " << boolToString(getBoolValue(dn)) << std::endl;
+}
+
+void LadderLogicParser::handleCtdInstruction(const std::string& params, bool& currentBranchState) {
+    std::istringstream paramStream(params);
+    std::string pre, acc, ct, dn;
+    std::getline(paramStream, pre, ',');
+    std::getline(paramStream, acc, ',');
+    std::getline(paramStream, ct, ',');
+    std::getline(paramStream, dn, ',');
+
+    if (pre.empty() || acc.empty() || ct.empty() || dn.empty()) {
+        std::cerr << "CTD instruction has incomplete parameters." << std::endl;
+        return;
+    }
+
+    int accValue = std::get<int>(variableMap[acc]);
+    bool ctValue = getBoolValue(ct);
+
+    if (!currentBranchState && ctValue) {
+        accValue--;
+        setBoolValue(ct, false);
+        std::cout << "CTD[" << params << "] === ";
+    } else if (currentBranchState) {
+        setBoolValue(ct, true);
+        std::cout << "CTD[" << params << "] --- ";
+    }
+
+    if (accValue <= 0) {
+        setBoolValue(dn, true);
+    } else {
+        setBoolValue(dn, false);
+    }
+
+    variableMap[acc] = accValue;
+    std::cout << "ACC: " << accValue << ", DN: " << boolToString(getBoolValue(dn)) << std::endl;
+}
 
 bool LadderLogicParser::handleOnrInstruction(const std::string& var1, bool& currentBranchState) {
     bool previousState = getBoolValue(var1);
