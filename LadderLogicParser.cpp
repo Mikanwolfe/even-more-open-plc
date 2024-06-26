@@ -25,6 +25,7 @@ void LadderLogicParser::executeLogic() {
     auto start = high_resolution_clock::now();
     
     for (const auto& line : logic) {
+        
         std::istringstream iss(line);
         std::string token;
         iss >> token;
@@ -40,7 +41,9 @@ void LadderLogicParser::executeLogic() {
         }
 
         lineState = true; // Reset line state for each new line
+        std::cout << "| ===  ";
         handleTokens(tokens);
+        std::cout << "|" << std::endl;
     }
 
     
@@ -48,8 +51,6 @@ void LadderLogicParser::executeLogic() {
     // std::this_thread::sleep_for(milliseconds(1));
     auto end = high_resolution_clock::now();
     scanTime = duration_cast<microseconds>(end - start).count();
-    
-    std::cout << "Scan Time: " << scanTime << " us" << std::endl;
 }
 
 void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
@@ -84,7 +85,6 @@ void LadderLogicParser::handleTokens(const std::vector<std::string>& tokens) {
         ++i;
     }
 }
-
 void LadderLogicParser::handleInstruction(const std::string& opcode, const std::string& params, bool& currentBranchState) {
     if (opcode == "XIC") {
         if (params.empty()) {
@@ -93,7 +93,7 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         }
         bool value = getBoolValue(params);
         currentBranchState = currentBranchState && value;
-        std::cout << "XIC(" << params << ") = " << boolToString(value) << ", Line = " << boolToString(currentBranchState) << std::endl;
+        std::cout << "XIC[" << params << "]" << (currentBranchState ? " === " : " --- ");
     } else if (opcode == "XIO") {
         if (params.empty()) {
             std::cerr << "XIO instruction missing parameters." << std::endl;
@@ -101,14 +101,14 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         }
         bool value = !getBoolValue(params);
         currentBranchState = currentBranchState && value;
-        std::cout << "XIO(" << params << ") = " << boolToString(value) << ", Line = " << boolToString(currentBranchState) << std::endl;
+        std::cout << "XIO[" << params << "]" << (currentBranchState ? " === " : " --- ");
     } else if (opcode == "OTE") {
         if (params.empty()) {
             std::cerr << "OTE instruction missing parameters." << std::endl;
             return;
         }
         setBoolValue(params, currentBranchState);
-        std::cout << "OTE(" << params << ") = " << boolToString(currentBranchState) << std::endl;
+        std::cout << "OTE[" << params << "]" << (currentBranchState ? " === " : " --- ");
     } else if (opcode == "OTL") {
         if (params.empty()) {
             std::cerr << "OTL instruction missing parameters." << std::endl;
@@ -117,7 +117,7 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         if (currentBranchState) {
             setBoolValue(params, true);
         }
-        std::cout << "OTL(" << params << ") = " << boolToString(getBoolValue(params)) << std::endl;
+        std::cout << "OTL[" << params << "]" << (getBoolValue(params) ? " === " : " --- ");
     } else if (opcode == "OTU") {
         if (params.empty()) {
             std::cerr << "OTU instruction missing parameters." << std::endl;
@@ -126,7 +126,7 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         if (currentBranchState) {
             setBoolValue(params, false);
         }
-        std::cout << "OTU(" << params << ") = " << boolToString(getBoolValue(params)) << std::endl;
+        std::cout << "OTU[" << params << "]" << (getBoolValue(params) ? " === " : " --- ");
     } else if (opcode == "ADD") {
         std::istringstream paramStream(params);
         std::string var1, var2, var3;
@@ -140,6 +140,7 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         }
 
         if (!currentBranchState) {
+            std::cout << "ADD[" << params << "] --- ";
             return; // Do not run this instruction if line state is LOW
         }
         handleAddInstruction(var1, var2, var3);
@@ -156,6 +157,7 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
         }
 
         if (!currentBranchState) {
+            std::cout << "SUB[" << params << "] --- ";
             return; // Do not run this instruction if line state is LOW
         }
 
@@ -171,6 +173,7 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
             return;
         }
         currentBranchState = currentBranchState && handleLssInstruction(var1, var2);
+        std::cout << "LSS[" << params << "]" << (currentBranchState ? " === " : " --- ");
     } else if (opcode == "GTR") {
         std::istringstream paramStream(params);
         std::string var1, var2;
@@ -182,17 +185,45 @@ void LadderLogicParser::handleInstruction(const std::string& opcode, const std::
             return;
         }
         currentBranchState = currentBranchState && handleGtrInstruction(var1, var2);
+        std::cout << "GTR[" << params << "]" << (currentBranchState ? " === " : " --- ");
     } else if (opcode == "TON") {
         handleTonInstruction(params, currentBranchState);
     } else if (opcode == "TOF") {
         handleTofInstruction(params, currentBranchState);
     } else if (opcode == "ONR") {
         currentBranchState = handleOnrInstruction(params, currentBranchState);
+        std::cout << "ONR[" << params << "]" << (currentBranchState ? " === " : " --- ");
     } else if (opcode == "ONF") {
         currentBranchState = handleOnfInstruction(params, currentBranchState);
+        std::cout << "ONF[" << params << "]" << (currentBranchState ? " === " : " --- ");
     } else {
         std::cerr << "Unknown instruction: " << opcode << std::endl;
     }
+}
+
+
+bool LadderLogicParser::handleOnrInstruction(const std::string& var1, bool& currentBranchState) {
+    bool previousState = getBoolValue(var1);
+    if (currentBranchState && !previousState) {
+        setBoolValue(var1, true);
+        currentBranchState = true;
+        return true;
+    }
+    setBoolValue(var1, currentBranchState);
+    currentBranchState = false;
+    return false;
+}
+
+bool LadderLogicParser::handleOnfInstruction(const std::string& var1, bool& currentBranchState) {
+    bool previousState = getBoolValue(var1);
+    if (!currentBranchState && previousState) {
+        setBoolValue(var1, false);
+        currentBranchState = true;
+        return true;
+    }
+    setBoolValue(var1, currentBranchState);
+    currentBranchState = false;
+    return false;
 }
 
 void LadderLogicParser::handleBranchStart(std::stack<bool>& branchStack, std::stack<bool>& currentBranchStateStack, bool& branchResult, bool& currentBranchState) {
@@ -200,13 +231,13 @@ void LadderLogicParser::handleBranchStart(std::stack<bool>& branchStack, std::st
     currentBranchStateStack.push(currentBranchState);
     branchResult = false;
     currentBranchState = true;
-    std::cout << "Branch Start, pushing current branch result and state to stack." << std::endl;
+    std::cout << "<<" << std::endl;
 }
 
 void LadderLogicParser::handleNextBranch(bool& branchResult, bool& currentBranchState) {
     branchResult = branchResult || currentBranchState;
     currentBranchState = true;
-    std::cout << "Next Branch, updating branch result to " << boolToString(branchResult) << std::endl;
+    std::cout << "^^" << std::endl;
 }
 
 void LadderLogicParser::handleBranchEnd(std::stack<bool>& branchStack, std::stack<bool>& currentBranchStateStack, bool& branchResult, bool& currentBranchState) {
@@ -217,35 +248,7 @@ void LadderLogicParser::handleBranchEnd(std::stack<bool>& branchStack, std::stac
     currentBranchState = branchStack.top();
     branchStack.pop();
     currentBranchState = currentBranchState && branchResult;
-    std::cout << "Branch End, updating branch result to " << boolToString(currentBranchState) << std::endl;
-}
-
-bool LadderLogicParser::handleOnrInstruction(const std::string& var1, bool& currentBranchState) {
-    bool previousState = getBoolValue(var1);
-    if (currentBranchState && !previousState) {
-        setBoolValue(var1, true);
-        currentBranchState = true;
-        std::cout << "ONR(" << var1 << ") = " << boolToString(true) << ", Line = " << boolToString(currentBranchState) << std::endl;
-        return true;
-    }
-    setBoolValue(var1, currentBranchState);
-    currentBranchState = false;
-    std::cout << "ONR(" << var1 << ") = " << boolToString(false) << ", Line = " << boolToString(currentBranchState) << std::endl;
-    return false;
-}
-
-bool LadderLogicParser::handleOnfInstruction(const std::string& var1, bool& currentBranchState) {
-    bool previousState = getBoolValue(var1);
-    if (!currentBranchState && previousState) {
-        setBoolValue(var1, false);
-        currentBranchState = true;
-        std::cout << "ONF(" << var1 << ") = " << boolToString(true) << ", Line = " << boolToString(currentBranchState) << std::endl;
-        return true;
-    }
-    setBoolValue(var1, currentBranchState);
-    currentBranchState = false;
-    std::cout << "ONF(" << var1 << ") = " << boolToString(false) << ", Line = " << boolToString(currentBranchState) << std::endl;
-    return false;
+    std::cout << ">>" << std::endl;
 }
 
 void LadderLogicParser::handleTonInstruction(const std::string& params, bool currentBranchState) {
@@ -281,7 +284,7 @@ void LadderLogicParser::handleTonInstruction(const std::string& params, bool cur
     }
 
     variableMap[acc] = accValue;
-    std::cout << "TON(" << params << ") = DN: " << boolToString(std::get<bool>(variableMap[dn])) << ", TT: " << boolToString(std::get<bool>(variableMap[tt])) << ", ACC: " << accValue << std::endl;
+    std::cout << "TON(" << accValue << "/" << preValue << ")" << (currentBranchState ? " === " : " --- ");
 }
 
 void LadderLogicParser::handleTofInstruction(const std::string& params, bool currentBranchState) {
@@ -317,7 +320,7 @@ void LadderLogicParser::handleTofInstruction(const std::string& params, bool cur
     }
 
     variableMap[acc] = accValue;
-    std::cout << "TOF(" << params << ") = DN: " << boolToString(std::get<bool>(variableMap[dn])) << ", TT: " << boolToString(std::get<bool>(variableMap[tt])) << ", ACC: " << accValue << std::endl;
+    std::cout << "TOF(" << accValue << "/" << preValue << ")" << (currentBranchState ? " === " : " --- ");
 }
 
 void LadderLogicParser::handleAddInstruction(const std::string& var1, const std::string& var2, const std::string& var3) {

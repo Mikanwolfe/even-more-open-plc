@@ -1,0 +1,5 @@
+001 XIC(var1) XIO(var2) OTE(var3)
+002 XIO(var1) XIC(var2) OTE(var3)
+003 XIC(var3)
+004 XIO(var1) XIO(var2) OTE(var3)
+005 XIC(var3)

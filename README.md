@@ -71,6 +71,64 @@ Instructions are written simialrly to function calls. For example, `ADD(x,y,z)` 
 001 BST XIC(in1) NXB XIC(in2) NXB XIC(in3) BND OTE(out)
 ```
 
+### Example: Visualisation
+
+```
+tof_acc int 0
+tof_dn bool 1
+tof_pre int 10000
+tof_tt bool 0
+onr bool 0
+
+001 ONR(onr) TOF(tof_dn,tof_tt,tof_pre,tof_acc)
+002 XIC(tof_dn)
+```
+
+The above logic can generate ladder-like displays in the console:
+
+```
+-------Variables before execution:-------
+onr = true
+tof_acc = 142
+tof_dn = true
+tof_pre = 1000
+tof_tt = true
+--------------
+| ===  ONR[onr] --- TOF(226/1000) --- |
+| ===  XIC[tof_dn] === |
+-------Variables after execution:-------
+onr = true
+tof_acc = 226
+tof_dn = true
+tof_pre = 1000
+tof_tt = true
+Scan time: 79 us
+--------------
+```
+
+The output generally follows:
+```
+Key
+--- (branch is false)
+=== (branch is true)
+
+
+For each line, start with
+| ===
+
+End each line with 
+| << endl;
+
+Each token outputs itself and the next line state, i.e.
+XIC[var1]=== (var1 outputs true)
+XIO[var1]--- (var1 outputs false)
+
+Branch starts output <<
+Next Branch is ^^
+Branch End is >> 
+```
+
+
 ### Example: Simple SPS Simulation
 
 A simple simulation of an SPS with a single pump and a level transmitter.
