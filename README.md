@@ -192,14 +192,24 @@ Note: There will be no AND, OR blocks, as they should be implemented as rungs.
 
 ## Future Development
 
-- More instructions
-- IO mapping
+✨ = focus
+
+- [x] More Instructions - I count 18+ instructions as a win
+- [x] **CLI** Visualisation - Debugging output isn't so bad
+- [ ] Constants (e.g., 50.0 instead of val1)
+- [ ] Program state management ✨
+
+- [ ] Put into an ESP32
+- [ ] IO mapping
+- [ ] Program structuring
+- [ ] Validation
+- [ ] Function parameters and output to use rungs as AOIs
+
+### Not really on the table
+
 - Scan time optimisation
-- Program structuring
-- Validation
-- Visualisation
-- Function parameters and output to use rungs as AOIs
-- Run Mode, Pause Mode
+  - Not important for this project
+
 
 ## Philosophy and General Rules
 
